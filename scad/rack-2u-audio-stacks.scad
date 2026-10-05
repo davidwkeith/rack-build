@@ -1,7 +1,7 @@
 // 2U 19" rack panel, THREE bolt-together columns (one per bed-sized piece). Each column is
 // one AirPort Express (upper U) directly above one Kinter MA170 amp (lower U) -- a stack per
 // audio zone. Supersedes the old 1U left half (2x AirPort) and the standalone Kinter panel
-// (which only fit 2 amps): this is the complete 3-zone audio rack.
+// (which only fit 2 amps): this holds up to 3 zones, with the middle column blank by default.
 // Hue + the PoE++ injector are NOT here -- they stay on their own panel (rack-1u-hue-pi.scad).
 //
 // Column width is set by the WIDER device (the Kinter amp); the AirPort, being narrower,
@@ -11,7 +11,7 @@
 // and AirPort windows are too wide to bridge printed any other way.
 
 /* [Part] */
-part = "all"; // [all, 1, 2, 2-blank, 3]
+part = "all"; // [all, 1, 2, 2-stack, 3]
 print_orient = true;
 
 /* [Rack (EIA-310)] */
@@ -181,10 +181,11 @@ function ap_y0_echo() = shelf_depth - ap_dims[1];
 // Piece 1 and 3 carry an ear tab reaching to the rack's true outer edge (see ear_tab_w above);
 // the column itself shifts over to make room for piece 1's tab on its left.
 module piece_1() { ear_tab(true); translate([ear_tab_w, 0, 0]) column(P1_w, false, "", true, "nut"); }
-module piece_2() { column(P2_w, true, "head", true, "nut"); }
-// Blank alternative to piece 2, for a rack with only two zones: the same structural skeleton
-// (both floors, both joint flanges), just no AirPort/amp windows, dimple or tab bosses.
-module piece_2_blank() { skeleton(P2_w, true, "head", true, "nut"); }
+// Piece 2 is blank by default, for a rack with two zones: the same structural skeleton as the
+// outer columns (both floors, both joint flanges), just no AirPort/amp windows, dimple or tab
+// bosses. piece_2_stack() is the drop-in alternative that adds a third zone's stack.
+module piece_2() { skeleton(P2_w, true, "head", true, "nut"); }
+module piece_2_stack() { column(P2_w, true, "head", true, "nut"); }
 module piece_3() { column(P3_w, true, "head", false, ""); translate([P3_w, 0, 0]) ear_tab(false); }
 
 module oriented() {
@@ -197,5 +198,5 @@ x2 = (part == "all") ? ear_tab_w + P1_w + gap : 0;            // piece 1 carries
 x3 = (part == "all") ? ear_tab_w + P1_w + P2_w + 2 * gap : 0;
 if (part == "1" || part == "all") oriented() piece_1();
 if (part == "2" || part == "all") translate([x2, 0, 0]) oriented() piece_2();
-if (part == "2-blank") oriented() piece_2_blank();
+if (part == "2-stack") oriented() piece_2_stack();
 if (part == "3" || part == "all") translate([x3, 0, 0]) oriented() piece_3();
