@@ -46,7 +46,7 @@ To re-export every STL and preview image after changing a source file (needs
 | 18x | M3 x 8mm socket-head cap screw | Panel joints: 3 (1U Hue/Pi) + 12 (2U audio) + 3 (keystone) |
 | 18x | M3 hex nut | Panel joints (nut traps) |
 | 12x | 1.75mm filament offcuts, ~10mm long | Joint alignment dowels: 2 + 8 + 2 |
-| 8x | M2.5 self-tapping screw | Raspberry Pi 5 to sled standoffs (4 per sled) |
+| 8x | M2.5 self-tapping screw | Raspberry Pi 5 to sled standoffs (4 per sled); not needed where a HAT's own standoffs do the job |
 | 2x | M3 self-tapping screw | PoE++ bracket standoffs |
 | 4x | M3 self-tapping screw | Kinter MA170 tab mounting (2 per amp; 6x with a third zone) |
 | 12x | M6 cage nut + screw | Rack ears, 4 per panel (the 2U has 8 holes; 4 is enough) |
@@ -79,7 +79,10 @@ bolt works too; it stands 1mm proud of the flange, clear of every device.
   one TBD. Each slides in from the front and latches via a flexing tongue
   riding a ratchet tooth, rather than lifting out from above (earthquake
   country — a Pi swap never needs the panel pulled from the rack). USB
-  ports face front.
+  ports face front. The bays are sized for a Pi 5 under a
+  [52Pi P30 PoE+ HAT](https://wiki.52pi.com/index.php?title=EP-0238), a
+  ~30mm stack; that is tall enough that the bays are open at the top of the
+  front plate rather than framed.
 
 **Joint:** 3x M3 bolt + nut, 2x filament dowel, per half-to-half seam (one
 seam total on this panel) = **3 bolts, 3 nuts, 2 dowels**.
@@ -99,15 +102,20 @@ seam total on this panel) = **3 bolts, 3 nuts, 2 dowels**.
    **Check there's genuinely empty space in the rack slot directly below**
    — the adapter hangs ~31mm below the shelf floor.
 5. Screw each Pi 5 onto its sled (4x M2.5 each, 8x total), USB/Ethernet
-   toward the pull lip, then slide both sleds into the right piece from the
-   front until they latch. To pull one, lift the lip under the Pi's ports
+   toward the pull lip. If the HAT's standoffs have threaded studs, run
+   those through the board into the sled's standoffs in place of the
+   screws. Then slide both sleds into the right piece from the front until
+   they latch. To pull one, lift the lip under the Pi's ports
    and draw the sled out by it.
 6. Mount in the rack with M6 cage nuts.
 
-**Open items** (both need the real hardware, not more modelling):
+**Open items** (all need the real hardware, not more modelling):
 - **Needs calipers:** the Hue snap-post offsets are a photo estimate — if a
   post doesn't land in its slot, that's the first thing to re-check
   (`khole_dy` / `oval_dy`).
+- **Needs a test fit:** the Pi + HAT height is 52Pi's published ~30mm, not
+  a measurement. The model leaves it 2.7mm under the top of the 1U; set
+  `pi_stack_h` if yours differs.
 - **Needs a test print:** the Pi sled latch (flexing tongue + ratchet tooth)
   clears every interference check in the model but is untested as a
   physical mechanism. `ramp_h` in the .scad file is the knob to back off

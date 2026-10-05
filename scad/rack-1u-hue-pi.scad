@@ -118,7 +118,12 @@ so_h = 5;  so_d = 5.5;  pilot = 2.2;        // standoffs, printed ON the sled. T
                                             // latch tongue can rise ~1.5 mm beneath the board
                                             // without reaching its connector pins (~2 mm)
 sled_open_w = 95 + sled_clr;                // front opening: full sled cross-section passes through
-sled_open_h = 37;                           // clears sled + standoffs + Pi + PoE HAT + fan
+// Pi 5 + 52Pi P30 PoE+ HAT (19 mm standoffs over the active cooler) stands ~30 mm from the
+// underside of the Pi's board, per 52Pi's product-size diagram. On the sled that reaches 41 mm
+// above the panel's bottom edge, which leaves no room for a strip of plate over the opening --
+// so the opening runs out through the plate's top edge instead.
+pi_stack_h = 30;
+sled_open_h = panel_h - floor_t + 0.1;      // open-topped
 
 /* [Hue mounting-slot snap posts] */
 // Philips moulds two slots into the Hue's underside for wall-mounting: a true keyhole
@@ -198,6 +203,9 @@ pin_len  = arm_top + btn_travel - (zt + btn_top);
 hue_u    = off(left_items, 0) + pw("hue") / 2 + btn_dx;   // button X in Hue's half, local u
 hue_yc   = shelf_depth - hue_dims[1] / 2 + btn_dy;
 if (chan_top > panel_h - 0.3) echo("WARNING: pusher guide too tall for 1U", chan_top);
+pi_top = floor_t + sled_dims[2] + so_h + pi_stack_h;
+echo(str("Pi + HAT top at ", pi_top, " mm, ", panel_h - pi_top, " mm under the panel's top edge"));
+if (pi_top > panel_h) echo("WARNING: Pi + HAT stack too tall for 1U");
 
 module push_guide(cx, yc) {
   y1 = shelf_depth - hue_dims[1] - hue_stop;
