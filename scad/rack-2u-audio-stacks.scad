@@ -76,10 +76,14 @@ module xcyl(u, y, z, d, h, fn = 32) {
   translate([u, y, z]) rotate([0, 90, 0]) cylinder(d = d, h = h, $fn = fn);
 }
 
+// Flange-local coordinates: x=0 is the SEAM face, x=flange_t the interior (device-facing) face.
+// Head recesses and nut traps open onto the interior face so they stay reachable once two
+// columns are butted together; dowel sockets open onto the seam. A right-hand flange gets
+// these same cuts mirrored (see skeleton()).
 module joint_cuts(side) {
   for (y = bolt_y) for (z = bolt_z_levels) {
     xcyl(-0.1, y, z, bolt_d, flange_t + 0.2);
-    if (side == "head") xcyl(-0.1, y, z, head_d, head_depth + 0.1);
+    if (side == "head") xcyl(flange_t - head_depth, y, z, head_d, head_depth + 0.1);
     else                 xcyl(flange_t - nut_depth, y, z, nut_af / cos(30), nut_depth + 0.1, 6);
   }
   for (y = dowel_y) for (z = dowel_z_levels)
@@ -116,7 +120,7 @@ module skeleton(w, left_is_flange, left_side, right_is_flange, right_side) {
       else translate([w - outer_t, 0, 0]) cube([outer_t, shelf_depth, panel_h]);
     }
     if (left_is_flange) translate([0, plate_t, 0]) joint_cuts(left_side);
-    if (right_is_flange) translate([w - flange_t, plate_t, 0]) joint_cuts(right_side);
+    if (right_is_flange) translate([w, plate_t, 0]) mirror([1, 0, 0]) joint_cuts(right_side);
   }
 }
 
