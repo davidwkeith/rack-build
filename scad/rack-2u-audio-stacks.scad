@@ -2,7 +2,7 @@
 // one AirPort Express (upper U) directly above one Kinter MA170 amp (lower U) -- a stack per
 // audio zone. Supersedes the old 1U left half (2x AirPort) and the standalone Kinter panel
 // (which only fit 2 amps): this is the complete 3-zone audio rack.
-// Hue + the PoE++ injector are NOT here -- they stay on their own panel (rack-1u-airport-hue-pi.scad).
+// Hue + the PoE++ injector are NOT here -- they stay on their own panel (rack-1u-hue-pi.scad).
 //
 // Column width is set by the WIDER device (the Kinter amp); the AirPort, being narrower,
 // sits centred in the same column. Each column is its own piece (three Kinter amps side by

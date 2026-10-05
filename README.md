@@ -58,7 +58,7 @@ proud into an amp bay that only has 0.75mm of side clearance.
 
 ## 1. 1U — Hue Bridge + PoE++ injector + 2x Raspberry Pi 5
 
-**Source:** `scad/rack-1u-airport-hue-pi.scad`
+**Source:** `scad/rack-1u-hue-pi.scad`
 **Pieces:** `rack-1u-left.stl`, `rack-1u-right.stl`, `rack-1u-sled.stl` (**print this one twice** — one per Pi), `rack-1u-pin.stl`, `rack-1u-rod.stl`
 
 - **Left piece:** Philips Hue Bridge (model 3241312018) — front push-rod
