@@ -42,7 +42,12 @@ amp_win_inset = 4;
 // edge (~mid-depth). Photo/diagram estimate, not calipered -- confirm before printing.
 amp_tab_inset = 15 - 7.7 / 2;     // slot centre, in from each side edge
 amp_tab_y     = 63;               // slot centre, measured from the amp's rear edge
-amp_tab_pilot_d = 2.5;            // self-tap pilot through the floor, into the slot from below
+amp_tab_pilot_d = 2.5;            // self-tap pilot, through the floor and the boss beneath it
+amp_boss_h = 4;                   // boss under each tab screw, so it has more than the thin
+                                  // floor to bite into. Both floors are raised by this much
+                                  // so the bosses stay inside the panel's own 2U envelope.
+amp_tab_access_d = 10;            // driver holes through the UPPER floor, straight above the tab
+                                  // screws -- the only vertical way in once the amp is in place
 
 /* [AirPort Express 2nd gen -- upper U] */
 ap_dims  = [98, 98, 23];
@@ -55,6 +60,9 @@ ap_dimple_depth = 1;  ap_dimple_inset = 3;
 bolt_d = 3.4;  head_d = 6.4;  head_depth = 3;
 nut_af = 5.7;  nut_depth = 2.8;
 dowel_d = 2.0; dowel_depth = 5;
+
+z_amp = amp_boss_h;         // underside of the lower (amp) floor
+z_ap  = U + amp_boss_h;     // underside of the upper (AirPort) floor
 
 amp_pw = amp_dims[0] + amp_clr;
 ap_pw  = ap_dims[0] + ap_clr;
@@ -112,8 +120,8 @@ module skeleton(w, left_is_flange, left_side, right_is_flange, right_side) {
   difference() {
     union() {
       cube([w, plate_t, panel_h]);                                                 // front plate
-      translate([0, plate_t, 0]) cube([w, shelf_depth - plate_t, amp_floor_t]);     // lower floor
-      translate([0, plate_t, U]) cube([w, shelf_depth - plate_t, ap_floor_t]);      // upper floor
+      translate([0, plate_t, z_amp]) cube([w, shelf_depth - plate_t, amp_floor_t]);  // lower floor
+      translate([0, plate_t, z_ap]) cube([w, shelf_depth - plate_t, ap_floor_t]);    // upper floor
       if (left_is_flange) translate([0, plate_t, 0]) cube([flange_t, shelf_depth - plate_t, panel_h]);
       else cube([outer_t, shelf_depth, panel_h]);
       if (right_is_flange) translate([w - flange_t, plate_t, 0]) cube([flange_t, shelf_depth - plate_t, panel_h]);
@@ -124,29 +132,45 @@ module skeleton(w, left_is_flange, left_side, right_is_flange, right_side) {
   }
 }
 
+// Vertical cylinder drawn out to a 45-degree point, so it prints unsupported plate-down: a
+// boss points toward the front plate (the bed), a hole points away from it.
+module teardrop(d, h, hole = false) {
+  hull() {
+    cylinder(d = d, h = h, $fn = 32);
+    translate([0, (hole ? 1 : -1) * d / sqrt(2), 0]) cylinder(d = 0.01, h = h, $fn = 4);
+  }
+}
+
 module column(w, left_is_flange, left_side, right_is_flange, right_side) {
   cx = w / 2;
+  tab_x = [for (dx = [-1, 1]) cx + dx * (amp_dims[0] / 2 - amp_tab_inset)];
+  tab_y = plate_t + amp_front_gap + amp_dims[1] - amp_tab_y;
   difference() {
     union() {
       skeleton(w, left_is_flange, left_side, right_is_flange, right_side);
-      // small pads under the thin amp floor, so the tab screws have something to bite into
-      for (dx = [-1, 1])
-        translate([cx + dx * (amp_dims[0] / 2 - amp_tab_inset), plate_t + amp_front_gap + amp_dims[1] - amp_tab_y, -4])
-          cylinder(d = 10, h = 4, $fn = 24);
+      // bosses under the thin amp floor, so the tab screws have something to bite into
+      for (x = tab_x) translate([x, tab_y, 0]) teardrop(10, amp_boss_h + 0.01);
     }
     // Kinter: front-flush control-panel window
-    translate([cx - (amp_dims[0] - 2 * amp_win_inset) / 2, -0.1, amp_floor_t + amp_win_inset])
+    translate([cx - (amp_dims[0] - 2 * amp_win_inset) / 2, -0.1, z_amp + amp_floor_t + amp_win_inset])
       cube([amp_dims[0] - 2 * amp_win_inset, plate_t + 0.2, amp_dims[2] - 2 * amp_win_inset]);
     // tab screw pilots -- through the floor and its boss below, for a self-tap from above
-    for (dx = [-1, 1])
-      translate([cx + dx * (amp_dims[0] / 2 - amp_tab_inset), plate_t + amp_front_gap + amp_dims[1] - amp_tab_y, -4.1])
-        cylinder(d = amp_tab_pilot_d, h = amp_floor_t + 4.2, $fn = 16);
-    // AirPort: full-front window (status light) + floor dimple, rear-flush, offset up by one U
-    translate([cx - ap_win_w / 2, -0.1, U + ap_floor_t])
+    for (x = tab_x) translate([x, tab_y, -0.1])
+      cylinder(d = amp_tab_pilot_d, h = z_amp + amp_floor_t + 0.2, $fn = 16);
+    // ... and the driver holes that let a screwdriver reach them through the upper floor
+    for (x = tab_x) translate([x, tab_y, z_ap - 0.1])
+      teardrop(amp_tab_access_d, ap_floor_t + 0.2, hole = true);
+    // AirPort: full-front window (status light) + floor dimple, rear-flush, in the upper U
+    translate([cx - ap_win_w / 2, -0.1, z_ap + ap_floor_t])
       cube([ap_win_w, plate_t + 0.2, ap_win_h]);
     ap_y0 = shelf_depth - ap_dims[1];
-    translate([cx - ap_dims[0] / 2 + ap_dimple_inset, ap_y0 + ap_dimple_inset, U + ap_floor_t - ap_dimple_depth])
-      cube([ap_dims[0] - 2 * ap_dimple_inset, ap_dims[1] - 2 * ap_dimple_inset, ap_dimple_depth + 0.01]);
+    // the dimple's rear wall slopes at 45 degrees: printed plate-down it would otherwise be a
+    // ledge hanging over the recess
+    translate([cx - ap_dims[0] / 2 + ap_dimple_inset, ap_y0 + ap_dimple_inset, z_ap + ap_floor_t]) hull() {
+      translate([0, 0, -ap_dimple_depth])
+        cube([ap_dims[0] - 2 * ap_dimple_inset, ap_dims[1] - 2 * ap_dimple_inset - ap_dimple_depth, ap_dimple_depth + 0.01]);
+      cube([ap_dims[0] - 2 * ap_dimple_inset, ap_dims[1] - 2 * ap_dimple_inset, 0.01]);
+    }
   }
   echo(str("column: amp front=", plate_t + amp_front_gap, " rear=", plate_t + amp_front_gap + amp_dims[1],
            " | AirPort rear-flush, front=", ap_y0_echo(), "  (shelf rear at y=", shelf_depth, ")"));
