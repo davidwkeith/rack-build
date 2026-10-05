@@ -115,7 +115,7 @@ seam total on this panel) = **3 bolts, 3 nuts, 2 dowels**.
 
 ---
 
-## 2. 2U — Audio stacks (Kitchen, Owner's Bathroom + a third AirPlay zone)
+## 2. 2U — Audio stacks (AirPlay zones 1-3)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/rack-2u-audio-stacks-dark.png">
@@ -125,8 +125,8 @@ seam total on this panel) = **3 bolts, 3 nuts, 2 dowels**.
 **Source:** `scad/rack-2u-audio-stacks.scad`
 **Pieces:** `audio-1.stl`, `audio-2.stl`, `audio-3.stl` (or `audio-2-blank.stl` in place of `audio-2.stl`)
 
-Three bolt-together columns, each pairing one AirPort Express (upper U)
-directly above one Kinter MA170 amp (lower U).
+Three bolt-together columns, one per AirPlay zone, each pairing one AirPort
+Express (upper U) directly above one Kinter MA170 amp (lower U).
 
 - **Every column:** AirPort rear-flush with a full-face front
   window + floor dimple; Kinter front-flush with a control-panel window and
