@@ -1,0 +1,40 @@
+name: Release
+
+# Pushing a v* tag exports the STLs and publishes them as a GitHub release.
+# A manual run only builds them, as a downloadable artifact, to check the sources still export.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Export STLs
+        run: >
+          docker run --rm --entrypoint sh -v "$PWD":/work -w /work
+          openscad/openscad:dev ./build.sh release
+
+      - name: List STLs
+        run: ls -l stl && test "$(ls stl/*.stl | wc -l)" -eq 11
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stl
+          path: stl/*.stl
+          if-no-files-found: error
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          zip -j "rack-build-$GITHUB_REF_NAME-stl.zip" stl/*.stl
+          gh release create "$GITHUB_REF_NAME" stl/*.stl "rack-build-$GITHUB_REF_NAME-stl.zip" \
+            --title "$GITHUB_REF_NAME" --generate-notes

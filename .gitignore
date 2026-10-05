@@ -2,3 +2,7 @@
 .claude/
 *.gcode
 *.3mf
+
+# built by ./build.sh release and attached to GitHub releases, never committed
+stl/
+*.zip
