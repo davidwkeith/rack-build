@@ -10,7 +10,7 @@ render() {  # render <source> <part> <output>
 }
 
 for p in left right sled pin rod; do render rack-1u-hue-pi "$p" "rack-1u-$p"; done
-for p in 1 2 3;                   do render rack-2u-audio-stacks   "$p" "audio-$p";   done
+for p in 1 2 2-blank 3;             do render rack-2u-audio-stacks   "$p" "audio-$p";   done
 for p in left right;              do render rack-1u-keystone-panel "$p" "keystone-$p"; done
 
 preview() {  # preview <source> <camera> <size> [-D overrides...] -- assembled view, as racked

@@ -48,7 +48,7 @@ To re-export every STL and preview image after changing a source file (needs
 | 12x | 1.75mm filament offcuts, ~10mm long | Joint alignment dowels: 2 + 8 + 2 |
 | 8x | M2.5 self-tapping screw | Raspberry Pi 5 to sled standoffs (4 per sled) |
 | 2x | M3 self-tapping screw | PoE++ bracket standoffs |
-| 4x | M3 self-tapping screw | Kinter MA170 tab mounting (2 per active column) |
+| 6x | M3 self-tapping screw | Kinter MA170 tab mounting (2 per column) |
 | 12x | M6 cage nut + screw | Rack ears, 4 per panel (the 2U has 8 holes; 4 is enough) |
 
 Every joint is two 6mm flanges with a 3mm head recess on one side and a
@@ -115,33 +115,35 @@ seam total on this panel) = **3 bolts, 3 nuts, 2 dowels**.
 
 ---
 
-## 2. 2U — Audio stacks (Kitchen + Owner's Bathroom AirPlay)
+## 2. 2U — Audio stacks (Kitchen, Owner's Bathroom + a third AirPlay zone)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/rack-2u-audio-stacks-dark.png">
-  <img src="images/rack-2u-audio-stacks.png" alt="2U panel seen from the front: three bolted columns, the outer two with an AirPort window above an amp window">
+  <img src="images/rack-2u-audio-stacks.png" alt="2U panel seen from the front: three bolted columns, each with an AirPort window above an amp window">
 </picture>
 
 **Source:** `scad/rack-2u-audio-stacks.scad`
-**Pieces:** `audio-1.stl`, `audio-2.stl`, `audio-3.stl`
+**Pieces:** `audio-1.stl`, `audio-2.stl`, `audio-3.stl` (or `audio-2-blank.stl` in place of `audio-2.stl`)
 
 Three bolt-together columns, each pairing one AirPort Express (upper U)
 directly above one Kinter MA170 amp (lower U).
 
-- **Columns 1 & 3 (active):** AirPort rear-flush with a full-face front
+- **Every column:** AirPort rear-flush with a full-face front
   window + floor dimple; Kinter front-flush with a control-panel window and
   two printed screw bosses under the amp's factory mounting tabs. The amp
   floor sits 4mm up so those bosses stay inside the panel, and the AirPort
   floor sits 1mm above the amp rather than on the U line.
-- **Column 2:** blank for now — floor levels are there, no devices cut in.
+- **Blank column 2:** for a rack with only two zones, print
+  `audio-2-blank.stl` as the middle piece instead. It has the same floors
+  and joints with no windows, dimple or bosses, and bolts up identically.
 
 **Joint:** 2 seams (col 1-2, col 2-3), each 6x M3 bolt + nut (3 Y-positions x
 2 Z-levels, one level per U) + 4x filament dowel = **12 bolts, 12 nuts, 8
 dowels** total across both seams.
 
 **Assembly:**
-1. Print and dry-fit column 1 first — it's the active/populated design;
-   column 2 is just a blank spacer.
+1. Print column 1 first and dry-fit an amp and an AirPort in it before
+   printing the other two.
 2. Bolt the empty columns together in order (1-2, then 2-3), dowels first,
    same as the 1U panel. The bolt heads and nuts sit inside the bays, so
    this has to happen before the amps go in.
@@ -160,7 +162,7 @@ dowels** total across both seams.
 - **Needs a test fit:** the amp bay is built from caliper measurements of
   one MA170 (103 x 70 x 43mm case, 124.5mm across the tabs, slots 113mm
   apart and 30-42mm behind the face) but hasn't been printed. Fit an amp
-  to column 1 before printing column 3.
+  to column 1 before printing the rest.
 
 ---
 

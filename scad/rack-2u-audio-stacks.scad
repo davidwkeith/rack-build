@@ -11,7 +11,7 @@
 // and AirPort windows are too wide to bridge printed any other way.
 
 /* [Part] */
-part = "all"; // [all, 1, 2, 3]
+part = "all"; // [all, 1, 2, 2-blank, 3]
 print_orient = true;
 
 /* [Rack (EIA-310)] */
@@ -181,9 +181,10 @@ function ap_y0_echo() = shelf_depth - ap_dims[1];
 // Piece 1 and 3 carry an ear tab reaching to the rack's true outer edge (see ear_tab_w above);
 // the column itself shifts over to make room for piece 1's tab on its left.
 module piece_1() { ear_tab(true); translate([ear_tab_w, 0, 0]) column(P1_w, false, "", true, "nut"); }
-// Blank for now -- both floor levels are there (same structural skeleton as the other two
-// columns), just no AirPort/amp windows or dimple cut into it yet.
-module piece_2() { skeleton(P2_w, true, "head", true, "nut"); }
+module piece_2() { column(P2_w, true, "head", true, "nut"); }
+// Blank alternative to piece 2, for a rack with only two zones: the same structural skeleton
+// (both floors, both joint flanges), just no AirPort/amp windows, dimple or tab bosses.
+module piece_2_blank() { skeleton(P2_w, true, "head", true, "nut"); }
 module piece_3() { column(P3_w, true, "head", false, ""); translate([P3_w, 0, 0]) ear_tab(false); }
 
 module oriented() {
@@ -196,4 +197,5 @@ x2 = (part == "all") ? ear_tab_w + P1_w + gap : 0;            // piece 1 carries
 x3 = (part == "all") ? ear_tab_w + P1_w + P2_w + 2 * gap : 0;
 if (part == "1" || part == "all") oriented() piece_1();
 if (part == "2" || part == "all") translate([x2, 0, 0]) oriented() piece_2();
+if (part == "2-blank") oriented() piece_2_blank();
 if (part == "3" || part == "all") translate([x3, 0, 0]) oriented() piece_3();
