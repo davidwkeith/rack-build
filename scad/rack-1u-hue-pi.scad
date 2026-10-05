@@ -32,8 +32,9 @@ shelf_depth = 116;     // includes plate_t -- deepened for the 106 mm-long PoE++
 hue_dims = [91, 91, 26];     // Philips spec: ~90.6 x 90.9 x 26 mm
 clr      = 1.0;              // total side clearance, all devices
 hue_stop = 0.5;               // gap between Hue front and its stop wall
-stop_wall_h = 25;             // front-registration wall height for Hue -- stays low so it
-                               // doesn't block the Hue pusher rod
+stop_wall_h = 25;             // front-registration rib height for Hue (capped by the room in
+                               // front of it) -- stays low so it doesn't block the Hue pusher rod
+hue_stop_dx = 28;             // the two stop ribs sit this far either side of the Hue's centre
 
 /* [PoE++ mounting bracket (screws to the shelf UNDERSIDE; adapter clips onto the bracket's
    own sliders and hangs below the shelf -- it is no longer in a floor pocket) ] */
@@ -77,7 +78,11 @@ poe_pass_w = 48;  poe_pass_h = 28;  poe_pass_drop = 6;   // front window, open a
    clearance and latch spring force before committing to a full print. */
 sled_dims = [95, 100, 3];        // W x D x plate thickness
 sled_clr  = 1.5;                 // side clearance, bay vs sled
+sled_corner = 6;                 // 45-degree cut on the sled's rear corners (see the rear stops)
 sled_front_gap = 2;              // sled's front edge, FULLY INSERTED, to the plate's inner face
+sled_overtravel = 1;             // how far past its latched position the sled can be pushed before
+                                 // it meets the rear stop -- without this the catch bar has only
+                                 // latch_clr to drop behind the tooth, less than print tolerance
 
 /* [Pi sled rails + latch] */
 rail_t = 1.6;      rail_depth = 4;     // retention lip: thickness, reach in from each side wall
@@ -85,7 +90,7 @@ rail_z0 = 0.3;                          // lip floats this far above the sled pl
 rail_start = 16;                        // lip begins this far back from the front opening, so
                                           // the sled's leading edge is already past the window
                                           // before the rails start gripping it
-latch_w = 14;       latch_len = 22;     // cantilever tongue cut into the sled plate: width, length
+latch_w = 14;       latch_len = 30;     // cantilever tongue cut into the sled plate: width, length
 latch_slit = 1;                         // slit width freeing the tongue to flex
 latch_travel = 8;                       // rear edge of the tongue's catch bar, from the sled's
                                           // front edge. The bar is the only part of the sled left
@@ -95,7 +100,8 @@ latch_travel = 8;                       // rear edge of the tongue's catch bar, 
 latch_catch = 3;                        // catch bar length; the tooth's sheer face lands just
                                           // in front of it once the sled is fully inserted
 latch_clr = 0.3;                        // tooth-to-sled clearance, vertical and fore/aft
-ramp_len = 6;        ramp_h = 1.6;      // ratchet tooth: gentle rise over ramp_len, then an
+lip_ridge = [1.5, 2.5];                 // finger ridge at the pull lip's tip: thickness, height
+ramp_len = 6;        ramp_h = 1.2;      // ratchet tooth: gentle rise over ramp_len, then an
                                           // immediate sheer drop -- easy to slide in over, caught
                                           // behind the drop when pulled back out
 
@@ -108,9 +114,11 @@ pi_board = [56, 85];  pi_hole_x = 49;  pi_hole_y = 58;  pi_hole_inset = 3.5;
 // together, meaning the PoE/Ethernet cable runs from the front too. SD card edge faces the
 // sled's rear. USB-C power and HDMI go unused either way under PoE power.
 pi_front_gap = 2.5;               // board's USB/Ethernet edge to the sled's own FRONT edge
-so_h = 4;  so_d = 5.5;  pilot = 2.2;        // standoffs, printed ON the sled
+so_h = 5;  so_d = 5.5;  pilot = 2.2;        // standoffs, printed ON the sled. Tall enough that the
+                                            // latch tongue can rise ~1.5 mm beneath the board
+                                            // without reaching its connector pins (~2 mm)
 sled_open_w = 95 + sled_clr;                // front opening: full sled cross-section passes through
-sled_open_h = 36;                           // clears sled + standoffs + Pi + PoE HAT + fan
+sled_open_h = 37;                           // clears sled + standoffs + Pi + PoE HAT + fan
 
 /* [Hue mounting-slot snap posts] */
 // Philips moulds two slots into the Hue's underside for wall-mounting: a true keyhole
@@ -197,6 +205,10 @@ module push_guide(cx, yc) {
   difference() {
     union() {
       translate([cx - tw / 2, y1 - 6, 0]) cube([tw, 6, chan_top]);                               // pier
+      // legs carrying the pier forward to the front plate: printed plate-down it then grows up
+      // from the plate (bridging the rod's width between the legs) instead of hanging off the floor
+      for (x = [cx - tw / 2, cx + tw / 2 - side_t])
+        translate([x, plate_t - 0.01, 0]) cube([side_t, y1 - 6 - plate_t + 0.02, chan_top]);
       translate([cx - tw / 2, y1 - 0.01, arm_bot]) cube([tw, y_end - y1 + 0.01, chan_top - arm_bot]); // beam
     }
     translate([cx - chan_w / 2, y1 - 6.1, z_rb - 0.2]) cube([chan_w, 6.2, rod_h + 0.4]);          // rod slot in pier
@@ -235,8 +247,17 @@ module snap_post(cx, cy, shaft_d, barb_d, h = post_h, taper = post_taper, slit =
       translate([cx, cy, floor_t + h - bead_h / 2])
         cylinder(d1 = barb_d, d2 = shaft_d * 0.5, h = bead_h / 2, $fn = 28);
     }
-    translate([cx - slit / 2, cy - barb_d, floor_t - 0.1]) cube([slit, barb_d * 2, h + 0.2]);
-    translate([cx - barb_d, cy - slit / 2, floor_t - 0.1]) cube([barb_d * 2, slit, h + 0.2]);
+    // the slits run diagonally so that, printed plate-down, no prong has a flat underside
+    for (a = [45, 135]) translate([cx, cy, floor_t - 0.1]) rotate(a)
+      translate([-slit / 2, -barb_d, 0]) cube([slit, barb_d * 2, h + 0.2]);
+  }
+}
+
+// Screw boss with a 45-degree point toward the front plate, so it prints unsupported plate-down.
+module boss(d, h) {
+  hull() {
+    cylinder(d = d, h = h, $fn = 24);
+    translate([0, -d / sqrt(2), 0]) cylinder(d = 0.01, h = h, $fn = 4);
   }
 }
 
@@ -263,9 +284,16 @@ module half_local(side) {
         u0 = off(items, i);
         translate([u0 + pw(t), plate_t, 0])
           cube([wall_t, shelf_depth - plate_t, wall_top]);                         // divider
-        if (t == "hue") {                                                          // front stop
+        // Front stop: two ribs, with the pusher pier's rear face between them as a third. Each
+        // rib is a 45-degree gusset rising off the floor, so plate-down it prints unsupported
+        // (a full-width wall here would be a pair of 37 mm bridges).
+        if (t == "hue") {
           y1 = shelf_depth - dev(t)[1] - hue_stop;
-          translate([u0, y1 - wall_t, 0]) cube([pw(t), wall_t, stop_wall_h]);
+          rib_h = min(stop_wall_h - floor_t, y1 - wall_t - plate_t);
+          for (dx = [-1, 1]) translate([u0 + pw(t) / 2 + dx * hue_stop_dx - wall_t / 2, 0, 0]) hull() {
+            translate([0, y1 - wall_t, 0]) cube([wall_t, wall_t, floor_t + rib_h]);
+            translate([0, y1 - wall_t - rib_h, 0]) cube([wall_t, 0.01, floor_t]);
+          }
         }
 
         if (t == "hue") {
@@ -277,8 +305,8 @@ module half_local(side) {
       if (side == "L")   // PoE++ bracket standoffs, hang below the floor -- see caution above
         for (dx = [-1, 1])
           translate([bracket_cx, bracket_cy + dx * bracket_hole_dy, -bracket_boss_h])
-            cylinder(d = bracket_boss_d, h = bracket_boss_h, $fn = 24);
-      // Pi sled rails, rear stop and latch ramp -- see the per-item cut block for the matching
+            boss(bracket_boss_d, bracket_boss_h);
+      // Pi sled rails, rear stops and latch ramp -- see the per-item cut block for the matching
       // front opening. Rails run from just behind the opening to near the bay's rear, floating
       // just above the sled's plate so it can slide but not lift out.
       for (i = [0 : n - 1]) if (items[i] == "pi_sled") {
@@ -287,11 +315,17 @@ module half_local(side) {
         sled_y0 = plate_t + sled_front_gap;
         rail_y0 = plate_t + rail_start;
         rail_y1 = sled_y0 + sled_dims[1] - 4;             // stop a little short of the rear stop
-        for (xside = [u0, u0 + pw("pi_sled") - rail_depth])
-          translate([xside, rail_y0, floor_t + sled_dims[2] + rail_z0])
-            cube([rail_depth, rail_y1 - rail_y0, rail_t]);
-        translate([u0 + 2, sled_y0 + sled_dims[1], 0])     // rear stop
-          cube([pw("pi_sled") - 4, wall_t, floor_t + sled_dims[2] + rail_z0 + rail_t]);
+        // each lip grows out of its wall at 45 degrees, so its front end prints unsupported
+        for (m = [0, 1])
+          translate([u0 + m * pw("pi_sled"), 0, floor_t + sled_dims[2] + rail_z0]) mirror([m, 0, 0])
+            linear_extrude(rail_t)
+              polygon([[0, rail_y0 - rail_depth], [rail_depth, rail_y0], [rail_depth, rail_y1], [0, rail_y1]]);
+        // rear stops: a 45-degree wedge in each rear corner, matching the sled's cut corners.
+        // They centre the sled as it seats, and plate-down they print unsupported.
+        y_rear = sled_y0 + sled_dims[1] + sled_overtravel;
+        for (m = [0, 1]) translate([u0 + m * pw("pi_sled"), 0, 0]) mirror([m, 0, 0])
+          linear_extrude(floor_t + sled_dims[2] + rail_z0 + rail_t)
+            polygon([[0, y_rear - sled_corner - sled_clr / 2], [sled_corner + sled_clr / 2, y_rear], [0, y_rear]]);
         peak_y = sled_y0 + latch_travel - latch_catch;   // sheer face, just ahead of the catch bar
         hull() {
           translate([bcx - latch_w / 2, peak_y - ramp_len, floor_t]) cube([latch_w, 0.1, 0.1]);
@@ -351,14 +385,18 @@ module oriented() {
 // the sled's front edge) carries a full-thickness catch bar; everything else along the shelf
 // tooth's track is relieved on the underside so the sled slides over the tooth freely. As the
 // sled goes home the bar climbs the tooth's gentle front slope, lifting the tongue, then drops
-// behind the sheer back face. A raised pull-tab at the tongue's free tip, right at the sled's
-// front edge, is both the release (lift it to clear the tooth) and the grip point for pulling
-// the sled back out.
+// behind the sheer back face. The tongue carries on forward through the front opening as a
+// pull lip with a finger ridge: lift it to clear the tooth, then pull the sled out by it. The
+// lip sits in front of the Pi's connectors rather than under the board, so the only thing that
+// has to rise beneath the board is the bare tongue.
 module pi_sled() {
   cx = sled_dims[0] / 2;
   by0 = pi_front_gap;   // board's front (USB/Ethernet) edge, local to the sled
   hole_y0 = by0 + pi_board[1] - pi_hole_inset - pi_hole_y;   // front hole row
   catch_y0 = latch_travel - latch_catch + latch_clr;         // catch bar's front (latching) face
+  // toe of the tooth, with the sled pushed hard against the rear stop
+  pocket_y0 = latch_travel - latch_catch - ramp_len - latch_clr - sled_overtravel;
+  lip_y0 = -(sled_front_gap + plate_t - 1);                  // lip stops 1 mm short of the panel face
   relief_w = latch_w + 2 * latch_slit;
   relief_h = ramp_h + latch_clr;
   difference() {
@@ -367,8 +405,10 @@ module pi_sled() {
       for (dx = [-1, 1], dy = [0, 1])
         translate([cx + dx * pi_hole_x / 2, hole_y0 + dy * pi_hole_y, sled_dims[2] - 0.01])
           cylinder(d = so_d, h = so_h + 0.01, $fn = 32);
-      translate([cx - latch_w / 2, 0, sled_dims[2] - 0.01])   // pull-tab
-        cube([latch_w, 4, 1.4]);
+      translate([cx - latch_w / 2, lip_y0, 0])                         // pull lip
+        cube([latch_w, -lip_y0 + 0.01, sled_dims[2]]);
+      translate([cx - latch_w / 2, lip_y0, sled_dims[2] - 0.01])       // finger ridge
+        cube([latch_w, lip_ridge[0], lip_ridge[1] + 0.01]);
     }
     for (dx = [-1, 1], dy = [0, 1])
       translate([cx + dx * pi_hole_x / 2, hole_y0 + dy * pi_hole_y, sled_dims[2] + so_h - 6])
@@ -376,9 +416,15 @@ module pi_sled() {
     // the two slits that free the latch tongue to flex: free at the front edge, anchored at latch_len
     for (x = [cx - latch_w / 2 - latch_slit, cx + latch_w / 2])
       translate([x, -0.1, -0.1]) cube([latch_slit, latch_len + 0.1, sled_dims[2] + 0.2]);
+    // rear corners cut at 45 degrees to seat against the shelf's corner stops
+    for (m = [0, 1]) translate([m * sled_dims[0], sled_dims[1], -0.1]) mirror([m, 0, 0])
+      linear_extrude(sled_dims[2] + 0.2)
+        polygon([[-0.1, -sled_corner - 0.1], [-0.1, 0.1], [sled_corner + 0.1, 0.1]]);
     // underside relief along the tooth's track: a pocket ahead of the catch bar (where the tooth
-    // sits once latched) and a clearance channel behind it, out through the sled's rear edge
-    for (seg = [[-0.1, catch_y0], [latch_travel, sled_dims[1] + 0.1]])
+    // sits once latched) and a clearance channel behind it, out through the sled's rear edge.
+    // The lip and the bar both stay full thickness, so printed flat the pocket's roof bridges
+    // between them instead of hanging free.
+    for (seg = [[pocket_y0, catch_y0], [latch_travel, sled_dims[1] + 0.1]])
       translate([cx - relief_w / 2, seg[0], -0.1]) cube([relief_w, seg[1] - seg[0], relief_h + 0.1]);
   }
 }
