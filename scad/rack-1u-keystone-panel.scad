@@ -39,7 +39,7 @@ keystone_z = 15.83;               // moved down from centred (21.83) -- leaves ~
 /* [Ear reinforcement] */
 // The panel's thinned to 2.5 mm for the keystone clips, but a rack screw clamping down on
 // only 2.5 mm of material right at the ear is asking for a cracked or stripped hole. Each ear
-// gets a local pad bringing it back up to a sturdier 5 mm, sized around both hole positions.
+// gets a local pad bringing it back up to a sturdier 5 mm, running the full panel height.
 ear_pad_w = 18;  ear_pad_t = 5;
 
 /* [Joint (M3), same hardware as the other panels] */
@@ -71,7 +71,6 @@ if (pitch < keystone_w) echo("WARNING: pitch is narrower than the port itself --
 bolt_z  = [panel_h * 0.22, panel_h * 0.5, panel_h * 0.78];   // 3 bolts, spread over the height
 dowel_z = [panel_h * 0.36, panel_h * 0.64];
 
-// cylinder along Y, from y=y0 for length h
 // cylinder along X, from x=u for length h -- bolts/dowels run this way, across the seam
 module xcyl(u, y, z, d, h, fn = 32) {
   translate([u, y, z]) rotate([0, 90, 0]) cylinder(d = d, h = h, $fn = fn);
@@ -95,9 +94,12 @@ module half_local(side) {
     union() {
       cube([half_w, plate_t, panel_h]);
       translate([fx0, 0, 0]) cube([flange_t, flange_depth, panel_h]);
-      for (dz = [-1, 1])   // ear reinforcement pads, see header note
-        translate([ear_u - ear_pad_w / 2, 0, panel_h / 2 + dz * ear_hole_dz / 2 - ear_pad_w / 2])
-          cube([ear_pad_w, ear_pad_t, ear_pad_w]);
+      // Ear reinforcement pad, see header note. One full-height strip from the piece's outer
+      // edge to ear_pad_w/2 past the holes -- square pads centred on each hole would overhang
+      // the panel's top, bottom and outer edges and foul the neighbouring rack units.
+      ear_pad_x0 = (side == "L") ? 0 : ear_u - ear_pad_w / 2;
+      translate([ear_pad_x0, 0, 0])
+        cube([(rack_w - ear_hole_x) / 2 + ear_pad_w / 2, ear_pad_t, panel_h]);
     }
     for (dz = [-1, 1])
       translate([ear_u, -0.1, panel_h / 2 + dz * ear_hole_dz / 2])
