@@ -17,12 +17,14 @@ an actual print — see the cautions under each section.
 - **Orientation:** every panel piece prints with its front plate face-down on
   the bed (the .scad files handle this rotation automatically — just slice
   the STL as exported, don't reorient it in the slicer)
-- **Supports:** the keystone pieces, sled, pin and rod need none. The 1U and
-  2U shelf pieces were designed to print without them but that hasn't been
-  checked in a slicer, and a few features hang off the vertical floor in
-  this orientation: the Hue push-rod pier and stop wall, the Hue snap posts,
-  the Pi sled rear stops, and the screw bosses under the floors. Preview
-  those before deciding.
+- **Supports:** none, for any piece. Stops, bosses and rail ends rise at 45
+  degrees from the wall they grow out of, and the only overhangs left in
+  the exported STLs are short bridges (12mm inside the Hue push-rod pier,
+  16mm under the Pi sled, a 48mm strip of floor over the PoE window) and
+  the tops of horizontal screw holes and pegs. A slicer's automatic
+  supports will still build towers under every one of those holes, so
+  leave supports switched off. This comes from measuring the STLs, not
+  from a finished print.
 - **Layer height / infill:** no hard requirement from the design; 0.2mm /
   15-20% infill is a reasonable default. Parts with threads cut directly
   into the plastic (standoffs, bosses) will hold a self-tapping screw better
@@ -46,7 +48,7 @@ To re-export every STL and preview image after changing a source file (needs
 | 12x | 1.75mm filament offcuts, ~10mm long | Joint alignment dowels: 2 + 8 + 2 |
 | 8x | M2.5 self-tapping screw | Raspberry Pi 5 to sled standoffs (4 per sled) |
 | 2x | M3 self-tapping screw | PoE++ bracket standoffs |
-| 4x | M3 self-tapping screw | Kinter MA170 tab mounting (2 per active column) |
+| 4x | M3 self-tapping screw + 9mm washer | Kinter MA170 tab mounting (2 per active column); the washer spans the tab's slot |
 | 12x | M6 cage nut + screw | Rack ears, 4 per panel (the 2U has 8 holes; 4 is enough) |
 
 Every joint is two 6mm flanges with a 3mm head recess on one side and a
@@ -58,7 +60,10 @@ proud into an amp bay that only has 0.75mm of side clearance.
 
 ## 1. 1U — Hue Bridge + PoE++ injector + 2x Raspberry Pi 5
 
-![1U shelf seen from the front: Hue bay with its push-rod on the left, two Raspberry Pi sleds on the right](images/rack-1u-hue-pi.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/rack-1u-hue-pi-dark.png">
+  <img src="images/rack-1u-hue-pi.png" alt="1U shelf seen from the front: Hue bay with its push-rod on the left, two Raspberry Pi sleds on the right">
+</picture>
 
 *Assembled, with the separately printed sleds, push-rod and pin in red.*
 
@@ -82,7 +87,7 @@ seam total on this panel) = **3 bolts, 3 nuts, 2 dowels**.
 
 **Assembly:**
 1. Dry-fit one Pi sled into the right piece before printing a second — check
-   the latch clicks in and the pull-tab releases it cleanly.
+   the latch clicks in and lifting the pull lip releases it cleanly.
 2. Bolt the two halves together while both are still empty: the bolt heads
    sit in the Hue bay and the nuts in the first Pi bay, and the Hue covers
    two of the three heads once it's in. Heads go in from the left piece's
@@ -95,25 +100,28 @@ seam total on this panel) = **3 bolts, 3 nuts, 2 dowels**.
    **Check there's genuinely empty space in the rack slot directly below**
    — the adapter hangs ~31mm below the shelf floor.
 5. Screw each Pi 5 onto its sled (4x M2.5 each, 8x total), USB/Ethernet
-   toward the pull-tab, then slide both sleds into the right piece from the
-   front until they latch.
+   toward the pull lip, then slide both sleds into the right piece from the
+   front until they latch. To pull one, lift the lip under the Pi's ports
+   and draw the sled out by it.
 6. Mount in the rack with M6 cage nuts.
 
-**Open items:**
-- Hue snap-post offsets are a photo estimate, not calipered — if a post
-  doesn't land in its slot, that's the first thing to re-check.
-- The Pi sled latch (flexing tongue + ratchet tooth) is untested as a
+**Open items** (both need the real hardware, not more modelling):
+- **Needs calipers:** the Hue snap-post offsets are a photo estimate — if a
+  post doesn't land in its slot, that's the first thing to re-check
+  (`khole_dy` / `oval_dy`).
+- **Needs a test print:** the Pi sled latch (flexing tongue + ratchet tooth)
+  clears every interference check in the model but is untested as a
   physical mechanism. `ramp_h` in the .scad file is the knob to back off
   if the tooth grips too hard to release by hand.
-- The pull-tab has to lift ~1.6mm to release, in the ~2.6mm between it and
-  the underside of the Pi. Check the USB/Ethernet solder pins leave it that
-  much room; raise `so_h` if they don't.
 
 ---
 
 ## 2. 2U — Audio stacks (Kitchen + Owner's Bathroom AirPlay)
 
-![2U panel seen from the front: three bolted columns, the outer two with an AirPort window above an amp window](images/rack-2u-audio-stacks.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/rack-2u-audio-stacks-dark.png">
+  <img src="images/rack-2u-audio-stacks.png" alt="2U panel seen from the front: three bolted columns, the outer two with an AirPort window above an amp window">
+</picture>
 
 **Source:** `scad/rack-2u-audio-stacks.scad`
 **Pieces:** `audio-1.stl`, `audio-2.stl`, `audio-3.stl`
@@ -123,7 +131,8 @@ directly above one Kinter MA170 amp (lower U).
 
 - **Columns 1 & 3 (active):** AirPort rear-flush with a full-face front
   window + floor dimple; Kinter front-flush with a control-panel window and
-  two printed screw bosses under the amp's factory mounting tabs.
+  two printed screw bosses under the amp's factory mounting tabs. Both
+  floors sit 4mm above the U lines so those bosses stay inside the panel.
 - **Column 2:** blank for now — floor levels are there, no devices cut in.
 
 **Joint:** 2 seams (col 1-2, col 2-3), each 6x M3 bolt + nut (3 Y-positions x
@@ -137,28 +146,29 @@ dowels** total across both seams.
    same as the 1U panel. The bolt heads and nuts sit inside the bays, so
    this has to happen before the amps go in.
 3. Slide each Kinter MA170 into its lower U from the rear and screw it to
-   the floor bosses through the amp's factory tabs.
+   the floor bosses through the amp's factory tabs. The two driver holes in
+   the upper floor sit straight above the tab screws: lower each screw and
+   washer through on the driver.
 4. Slide each AirPort Express into its upper U from the rear until it drops
-   into the floor dimple.
+   into the floor dimple; it covers the driver holes.
 5. Mount with M6 cage nuts — these columns carry protruding ear tabs that
    reach the rack's true 482.6mm hole spacing (the 3 columns' own content
    only spans 406.5mm).
 
 **Open items:**
-- The amp tab screws sit mid-depth under the upper floor, with ~42mm of
-  headroom — there's no straight-down screwdriver access. Plan on a
-  right-angle driver from the rear, and check it on the column 1 test fit
-  before printing the rest.
-- The tab screw bosses hang 4mm below the panel's bottom edge. Whatever is
-  racked directly underneath needs to clear them.
-- Amp dimensions and tab positions come from listings and a dimension
-  diagram, not calipers (see the notes in the .scad file).
+- **Needs calipers:** amp dimensions and tab positions come from listings
+  and a dimension diagram (see the notes in the .scad file). The driver
+  holes and bosses both follow `amp_tab_inset` / `amp_tab_y`, so measure
+  the tabs on a real amp before printing columns 1 and 3.
 
 ---
 
 ## 3. 1U — 24-port keystone patch panel
 
-![1U keystone panel seen from the front: two bolted halves with twelve square cutouts each](images/rack-1u-keystone-panel.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/rack-1u-keystone-panel-dark.png">
+  <img src="images/rack-1u-keystone-panel.png" alt="1U keystone panel seen from the front: two bolted halves with twelve square cutouts each">
+</picture>
 
 **Source:** `scad/rack-1u-keystone-panel.scad`
 **Pieces:** `keystone-left.stl`, `keystone-right.stl` (12 ports each)
@@ -182,6 +192,15 @@ dowels**.
 3. Snap jacks in from the rear, terminated or not — they self-retain, no
    bracket needed behind the panel.
 4. Mount with M6 cage nuts.
+
+---
+
+## Also in the rack
+
+The router isn't one of these panels. The UCG Fiber and its power supply
+sit in the
+[UCG Fiber + PSU 19 inch modular rack mount](https://www.printables.com/model/1359874-ucg-fiber-psu-19-inch-modular-rack-mount)
+from Printables, printed as published.
 
 ---
 

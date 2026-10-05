@@ -15,9 +15,12 @@ for p in left right;              do render rack-1u-keystone-panel "$p" "keyston
 
 preview() {  # preview <source> <camera> <size> [-D overrides...] -- assembled view, as racked
   src=$1 cam=$2 size=$3; shift 3
-  echo "images/$src.png"
-  openscad -q -o "images/$src.png" --render=true --projection=o --colorscheme=Tomorrow \
-    --imgsize="$size" --camera="$cam" "$@" "scad/$src.scad"
+  for scheme in "Tomorrow" "Tomorrow Night"; do   # light, then dark for prefers-color-scheme
+    [ "$scheme" = "Tomorrow" ] && out="images/$src.png" || out="images/$src-dark.png"
+    echo "$out"
+    openscad -q -o "$out" --render=true --projection=o --colorscheme="$scheme" \
+      --imgsize="$size" --camera="$cam" "$@" "scad/$src.scad"
+  done
 }
 
 mkdir -p images
