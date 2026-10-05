@@ -38,11 +38,10 @@ amp_floor_t = 2;
 amp_headroom = 1;              // between the amp's top and the upper floor
 amp_front_gap = 3;
 amp_win_inset = 4;
-// Tab slots are 3.5 mm wide x 12 mm long, 113 mm apart centre to centre, and start 30 mm
-// behind the case's front face. The screws go 3 mm into each slot rather than at its middle:
-// that spot is inside the slot whether the 30 mm was taken to its front end or to its centre.
+// Tab slots are 3.5 mm wide x 12 mm long, 113 mm apart centre to centre, and run from 30 to
+// 42 mm behind the case's front face. The tabs sit flat on the floor (the amp has no feet).
 amp_tab_dx = 113;                 // slot centre to slot centre
-amp_tab_y  = 33;                  // screw position, behind the case's front face
+amp_tab_y  = 36;                  // slot centre, behind the case's front face
 amp_tab_pilot_d = 2.5;            // self-tap pilot, through the floor and the boss beneath it
 amp_boss_h = 4;                   // boss under each tab screw, so it has more than the thin
                                   // floor to bite into. The lower floor is raised by this much

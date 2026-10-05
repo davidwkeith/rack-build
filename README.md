@@ -159,9 +159,8 @@ dowels** total across both seams.
 **Open items:**
 - **Needs a test fit:** the amp bay is built from caliper measurements of
   one MA170 (103 x 70 x 43mm case, 124.5mm across the tabs, slots 113mm
-  apart). The tab screws sit 33mm behind the amp's face, a spot that is
-  inside the slot whether the slots start 30mm back or are centred there.
-  Confirm it on column 1 before printing column 3.
+  apart and 30-42mm behind the face) but hasn't been printed. Fit an amp
+  to column 1 before printing column 3.
 
 ---
 
