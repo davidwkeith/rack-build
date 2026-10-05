@@ -199,8 +199,9 @@ dowels**.
 
 The router isn't one of these panels. The UCG Fiber and its power supply
 sit in the
-[UCG Fiber + PSU 19 inch modular rack mount](https://www.printables.com/model/1359874-ucg-fiber-psu-19-inch-modular-rack-mount)
-from Printables, printed as published.
+[UCG Fiber + PSU 19 inch modular rack mount](https://www.printables.com/model/1359874-ucg-fiber-psu-19-inch-modular-rack-mount),
+a separate design by the same author, [David W. Keith](https://dwk.io),
+published on Printables.
 
 ---
 
