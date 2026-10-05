@@ -209,11 +209,14 @@ dowels**.
 
 ## Also in the rack
 
-The router isn't one of these panels. The UCG Fiber and its power supply
-sit in the
-[UCG Fiber + PSU 19 inch modular rack mount](https://www.printables.com/model/1359874-ucg-fiber-psu-19-inch-modular-rack-mount)
-by [Maurício Pessoa](https://www.printables.com/@Mauker) on Printables,
-printed as published.
+Two things in the rack aren't these panels:
+
+- **Router:** the UCG Fiber and its power supply sit in the
+  [UCG Fiber + PSU 19 inch modular rack mount](https://www.printables.com/model/1359874-ucg-fiber-psu-19-inch-modular-rack-mount)
+  by [Maurício Pessoa](https://www.printables.com/@Mauker) on Printables,
+  printed as published.
+- **Switch:** a Ubiquiti EdgeSwitch 24 (ES-24-250W), a 1U unit that mounts
+  on its own rack ears with no printed parts.
 
 ---
 
