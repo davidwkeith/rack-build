@@ -10,7 +10,7 @@
 // Model coordinates: X across, Y front(0)->rear, Z up. Floor bottom at Z=0.
 
 /* [Part] */
-part = "both"; // [both, left, right, pin, rod, sled]
+part = "both"; // [both, assembly, left, right, pin, rod, sled]
 
 /* [Rack (EIA-310)] */
 rack_w      = 482.6;
@@ -393,6 +393,19 @@ module pin_rest()    { translate([hue_u, hue_yc, zt + btn_top]) pin(); }
 module pin_pressed() { translate([hue_u, hue_yc, zt + btn_top - btn_travel]) pin(); }
 module rod_at(press) { rod_placed(hue_u, hue_yc, press); }
 
+// everything in place, for previews: both halves, sleds latched, push-rod and pin at rest
+module assembly() {
+  left_half();
+  right_half();
+  color("Tomato") {
+    translate([half_w, 0, 0]) mirror([1, 0, 0]) { pin_rest(); rod_at(0); }
+    for (i = [0 : len(right_items) - 1]) if (right_items[i] == "pi_sled")
+      translate([half_w + off(right_items, i) + sled_clr / 2, plate_t + sled_front_gap, floor_t])
+        pi_sled();
+  }
+}
+
+if (part == "assembly") assembly();
 if (part == "pin") pin_print();
 if (part == "rod") rod_print();
 if (part == "sled") pi_sled();

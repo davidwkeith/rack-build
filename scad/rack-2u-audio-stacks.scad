@@ -167,8 +167,8 @@ module oriented() {
 }
 
 gap = (part == "all") ? 10 : 0;
-x2 = (part == "all") ? P1_w + gap : 0;
-x3 = (part == "all") ? P1_w + P2_w + 2 * gap : 0;
+x2 = (part == "all") ? ear_tab_w + P1_w + gap : 0;            // piece 1 carries its ear tab
+x3 = (part == "all") ? ear_tab_w + P1_w + P2_w + 2 * gap : 0;
 if (part == "1" || part == "all") oriented() piece_1();
 if (part == "2" || part == "all") translate([x2, 0, 0]) oriented() piece_2();
 if (part == "3" || part == "all") translate([x3, 0, 0]) oriented() piece_3();
