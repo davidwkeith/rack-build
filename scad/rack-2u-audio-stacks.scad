@@ -28,33 +28,26 @@ wall_t  = 3;
 flange_t = 6;   outer_t = 3;        // joint walls run the FULL 2U height on this design
 shelf_depth = 130;
 
-/* [Kinter MA170 -- lower U. Same figures/caveats as the standalone Kinter panel: two
-   independent listings (US in, UK cm) agree on 124 x 117 x 41 mm; others for the same
-   product disagree by ~2x, so confirm before printing. ] */
-amp_dims  = [124, 117, 41];
+/* [Kinter MA170 -- lower U. Calipered off a real amp. Its dimension diagram's 4-7/8" turned
+   out to be the width across the mounting tabs and its 4-5/8" the depth over knobs and
+   terminals; the case itself is a good deal smaller than either. ] */
+amp_dims  = [103, 70, 43];     // case only: width, depth (no knobs or terminals), height
+amp_tab_w = 124.5;             // width across the two mounting tabs, tip to tip
 amp_clr   = 1.5;
-amp_floor_t = 2;               // thinned -- 41 mm amp only leaves 1.45 mm to spare in one U
+amp_floor_t = 2;
+amp_headroom = 1;              // between the amp's top and the upper floor
 amp_front_gap = 3;
 amp_win_inset = 4;
-// Mounting tabs confirmed by the official dimension diagram (4-7/8" = 123.8 mm is tab-to-tab,
-// matching amp_dims[0] already -- no resize needed). Measured off that same diagram: each
-// tab is ~15 mm wide with a ~7.7 x 13.9 mm oval slot, centred about 63 mm from the amp's rear
-// edge (~mid-depth). Photo/diagram estimate, not calipered -- confirm before printing.
-//
-// UNRESOLVED -- measure a real amp before printing columns 1 and 3. Read again, that diagram
-// draws the 4-7/8" bracket to the sides of the BODY, with the mounting tabs sticking out past
-// it (roughly 12 mm a side by scale), and draws the body about 1.5x wider than it is deep, so
-// its 4-5/8" is probably the depth over the knobs and terminals rather than the case. If that
-// reading is right, this bay is too narrow for the tabs, the tab screws and driver holes are
-// ~17 mm too far inboard, and the case is ~35 mm shallower than amp_dims[1]. Everything below
-// still follows the original reading.
-amp_tab_inset = 15 - 7.7 / 2;     // slot centre, in from each side edge
-amp_tab_y     = 63;               // slot centre, measured from the amp's rear edge
+// Tab slots are 3.5 mm wide x 12 mm long, 113 mm apart centre to centre, and start 30 mm
+// behind the case's front face. The screws go 3 mm into each slot rather than at its middle:
+// that spot is inside the slot whether the 30 mm was taken to its front end or to its centre.
+amp_tab_dx = 113;                 // slot centre to slot centre
+amp_tab_y  = 33;                  // screw position, behind the case's front face
 amp_tab_pilot_d = 2.5;            // self-tap pilot, through the floor and the boss beneath it
 amp_boss_h = 4;                   // boss under each tab screw, so it has more than the thin
-                                  // floor to bite into. Both floors are raised by this much
+                                  // floor to bite into. The lower floor is raised by this much
                                   // so the bosses stay inside the panel's own 2U envelope.
-amp_tab_access_d = 10;            // driver holes through the UPPER floor, straight above the tab
+amp_tab_access_d = 8;             // driver holes through the UPPER floor, straight above the tab
                                   // screws -- the only vertical way in once the amp is in place
 
 /* [AirPort Express 2nd gen -- upper U] */
@@ -70,9 +63,9 @@ nut_af = 5.7;  nut_depth = 2.8;
 dowel_d = 2.0; dowel_depth = 5;
 
 z_amp = amp_boss_h;         // underside of the lower (amp) floor
-z_ap  = U + amp_boss_h;     // underside of the upper (AirPort) floor
+z_ap  = z_amp + amp_floor_t + amp_dims[2] + amp_headroom;   // underside of the upper (AirPort) floor
 
-amp_pw = amp_dims[0] + amp_clr;
+amp_pw = amp_tab_w + amp_clr;         // the tabs, not the case, set the bay width
 ap_pw  = ap_dims[0] + ap_clr;
 col_w  = amp_pw;                       // the wider device sets the column width
 ap_x_margin = (col_w - ap_pw) / 2;     // AirPort is centred within the column
@@ -150,9 +143,10 @@ module teardrop(d, h, hole = false) {
 }
 
 module column(w, left_is_flange, left_side, right_is_flange, right_side) {
-  cx = w / 2;
-  tab_x = [for (dx = [-1, 1]) cx + dx * (amp_dims[0] / 2 - amp_tab_inset)];
-  tab_y = plate_t + amp_front_gap + amp_dims[1] - amp_tab_y;
+  // centre of the BAY, not of the piece: the two side walls differ in thickness on pieces 1 and 3
+  cx = (left_is_flange ? flange_t : outer_t) + col_w / 2;
+  tab_x = [for (dx = [-1, 1]) cx + dx * amp_tab_dx / 2];
+  tab_y = plate_t + amp_front_gap + amp_tab_y;
   difference() {
     union() {
       skeleton(w, left_is_flange, left_side, right_is_flange, right_side);

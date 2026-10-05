@@ -48,13 +48,12 @@ To re-export every STL and preview image after changing a source file (needs
 | 12x | 1.75mm filament offcuts, ~10mm long | Joint alignment dowels: 2 + 8 + 2 |
 | 8x | M2.5 self-tapping screw | Raspberry Pi 5 to sled standoffs (4 per sled) |
 | 2x | M3 self-tapping screw | PoE++ bracket standoffs |
-| 4x | M3 self-tapping screw + 9mm washer | Kinter MA170 tab mounting (2 per active column); the washer spans the tab's slot |
+| 4x | M3 self-tapping screw | Kinter MA170 tab mounting (2 per active column) |
 | 12x | M6 cage nut + screw | Rack ears, 4 per panel (the 2U has 8 holes; 4 is enough) |
 
 Every joint is two 6mm flanges with a 3mm head recess on one side and a
 2.8mm nut trap on the other, so an 8mm bolt ends inside the nut. A 10mm
-bolt also works on the 1U panels, but on the 2U's lower row it stands 1mm
-proud into an amp bay that only has 0.75mm of side clearance.
+bolt works too; it stands 1mm proud of the flange, clear of every device.
 
 ---
 
@@ -131,8 +130,9 @@ directly above one Kinter MA170 amp (lower U).
 
 - **Columns 1 & 3 (active):** AirPort rear-flush with a full-face front
   window + floor dimple; Kinter front-flush with a control-panel window and
-  two printed screw bosses under the amp's factory mounting tabs. Both
-  floors sit 4mm above the U lines so those bosses stay inside the panel.
+  two printed screw bosses under the amp's factory mounting tabs. The amp
+  floor sits 4mm up so those bosses stay inside the panel, and the AirPort
+  floor sits 1mm above the amp rather than on the U line.
 - **Column 2:** blank for now — floor levels are there, no devices cut in.
 
 **Joint:** 2 seams (col 1-2, col 2-3), each 6x M3 bolt + nut (3 Y-positions x
@@ -145,27 +145,23 @@ dowels** total across both seams.
 2. Bolt the empty columns together in order (1-2, then 2-3), dowels first,
    same as the 1U panel. The bolt heads and nuts sit inside the bays, so
    this has to happen before the amps go in.
-3. Slide each Kinter MA170 into its lower U from the rear and screw it to
-   the floor bosses through the amp's factory tabs. The two driver holes in
-   the upper floor sit straight above the tab screws: lower each screw and
-   washer through on the driver.
+3. Slide each Kinter MA170 into its lower U from the rear until its face
+   meets the front plate, and screw it to the floor bosses through the
+   amp's factory tabs. The two driver holes in the upper floor sit straight
+   above the tab screws: lower each screw through on the driver.
 4. Slide each AirPort Express into its upper U from the rear until it drops
-   into the floor dimple; it covers the driver holes.
+   into the floor dimple. The driver holes stay clear either side of it, so
+   an amp can come out without disturbing the AirPort.
 5. Mount with M6 cage nuts — these columns carry protruding ear tabs that
-   reach the rack's true 482.6mm hole spacing (the 3 columns' own content
-   only spans 406.5mm).
+   reach the rack's true 482.6mm width (the 3 columns' own content only
+   spans 408mm).
 
 **Open items:**
-- **Don't print columns 1 and 3 until an amp has been measured.** The lower
-  bay assumes the Kinter is 124mm wide *across its mounting tabs* and 117mm
-  deep. Kinter's own dimension diagram draws that 4-7/8" width across the
-  case alone, with the tabs sticking out a further ~12mm each side, and
-  draws the case much shallower than 4-5/8". Listings for the amp disagree
-  with each other as well. If the diagram is right the amp won't slide into
-  the bay as modelled, and the tab screws, bosses and driver holes are in
-  the wrong place. The numbers that settle it: case width, width across the
-  tabs, case depth, height, and where the tab slots sit (`amp_dims`,
-  `amp_tab_inset`, `amp_tab_y`).
+- **Needs a test fit:** the amp bay is built from caliper measurements of
+  one MA170 (103 x 70 x 43mm case, 124.5mm across the tabs, slots 113mm
+  apart). The tab screws sit 33mm behind the amp's face, a spot that is
+  inside the slot whether the slots start 30mm back or are centred there.
+  Confirm it on column 1 before printing column 3.
 
 ---
 
