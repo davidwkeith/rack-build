@@ -156,10 +156,16 @@ dowels** total across both seams.
    only spans 406.5mm).
 
 **Open items:**
-- **Needs calipers:** amp dimensions and tab positions come from listings
-  and a dimension diagram (see the notes in the .scad file). The driver
-  holes and bosses both follow `amp_tab_inset` / `amp_tab_y`, so measure
-  the tabs on a real amp before printing columns 1 and 3.
+- **Don't print columns 1 and 3 until an amp has been measured.** The lower
+  bay assumes the Kinter is 124mm wide *across its mounting tabs* and 117mm
+  deep. Kinter's own dimension diagram draws that 4-7/8" width across the
+  case alone, with the tabs sticking out a further ~12mm each side, and
+  draws the case much shallower than 4-5/8". Listings for the amp disagree
+  with each other as well. If the diagram is right the amp won't slide into
+  the bay as modelled, and the tab screws, bosses and driver holes are in
+  the wrong place. The numbers that settle it: case width, width across the
+  tabs, case depth, height, and where the tab slots sit (`amp_dims`,
+  `amp_tab_inset`, `amp_tab_y`).
 
 ---
 

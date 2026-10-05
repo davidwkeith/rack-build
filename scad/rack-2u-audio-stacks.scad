@@ -40,6 +40,14 @@ amp_win_inset = 4;
 // matching amp_dims[0] already -- no resize needed). Measured off that same diagram: each
 // tab is ~15 mm wide with a ~7.7 x 13.9 mm oval slot, centred about 63 mm from the amp's rear
 // edge (~mid-depth). Photo/diagram estimate, not calipered -- confirm before printing.
+//
+// UNRESOLVED -- measure a real amp before printing columns 1 and 3. Read again, that diagram
+// draws the 4-7/8" bracket to the sides of the BODY, with the mounting tabs sticking out past
+// it (roughly 12 mm a side by scale), and draws the body about 1.5x wider than it is deep, so
+// its 4-5/8" is probably the depth over the knobs and terminals rather than the case. If that
+// reading is right, this bay is too narrow for the tabs, the tab screws and driver holes are
+// ~17 mm too far inboard, and the case is ~35 mm shallower than amp_dims[1]. Everything below
+// still follows the original reading.
 amp_tab_inset = 15 - 7.7 / 2;     // slot centre, in from each side edge
 amp_tab_y     = 63;               // slot centre, measured from the amp's rear edge
 amp_tab_pilot_d = 2.5;            // self-tap pilot, through the floor and the boss beneath it
