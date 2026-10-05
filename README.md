@@ -28,8 +28,8 @@ an actual print — see the cautions under each section.
   into the plastic (standoffs, bosses) will hold a self-tapping screw better
   with higher infill in that specific region if your slicer supports it.
 
-To re-export every STL after changing a source file (needs `openscad` on
-your PATH):
+To re-export every STL and preview image after changing a source file (needs
+`openscad` on your PATH):
 
 ```sh
 ./build.sh
@@ -57,6 +57,10 @@ proud into an amp bay that only has 0.75mm of side clearance.
 ---
 
 ## 1. 1U — Hue Bridge + PoE++ injector + 2x Raspberry Pi 5
+
+![1U shelf seen from the front: Hue bay with its push-rod on the left, two Raspberry Pi sleds on the right](images/rack-1u-hue-pi.png)
+
+*Assembled, with the separately printed sleds, push-rod and pin in red.*
 
 **Source:** `scad/rack-1u-hue-pi.scad`
 **Pieces:** `rack-1u-left.stl`, `rack-1u-right.stl`, `rack-1u-sled.stl` (**print this one twice** — one per Pi), `rack-1u-pin.stl`, `rack-1u-rod.stl`
@@ -109,6 +113,8 @@ seam total on this panel) = **3 bolts, 3 nuts, 2 dowels**.
 
 ## 2. 2U — Audio stacks (Kitchen + Owner's Bathroom AirPlay)
 
+![2U panel seen from the front: three bolted columns, the outer two with an AirPort window above an amp window](images/rack-2u-audio-stacks.png)
+
 **Source:** `scad/rack-2u-audio-stacks.scad`
 **Pieces:** `audio-1.stl`, `audio-2.stl`, `audio-3.stl`
 
@@ -151,6 +157,8 @@ dowels** total across both seams.
 ---
 
 ## 3. 1U — 24-port keystone patch panel
+
+![1U keystone panel seen from the front: two bolted halves with twelve square cutouts each](images/rack-1u-keystone-panel.png)
 
 **Source:** `scad/rack-1u-keystone-panel.scad`
 **Pieces:** `keystone-left.stl`, `keystone-right.stl` (12 ports each)
