@@ -1,11 +1,10 @@
 // 1U 19" rack mount, two halves bolted at the centre.
 //   Left half : 1x Hue Bridge v2 + 1x Ubiquiti PoE++ Adapter (60W, U-POE++)
 //   Right half: 2x Home Assistant Raspberry Pi 5 + PoE HAT, each on a removable sled (below)
-// AirPort + Hue sit rear-flush (ports at the back); AirPort bays get a shallow floor dimple
-// to register the unit, and Hue gets a front push-rod button pusher (see its own section
-// below) -- no LED light pipes, the unit's status LEDs are too dim to be worth routing.
-// The PoE++ injector sits FRONT-flush instead -- its Ethernet
-// ports face the rack front through a window, AC cord exits the open rear.
+// The Hue sits rear-flush (ports at the back) and gets a front push-rod button pusher (see its
+// own section below) -- no LED light pipes, the unit's status LEDs are too dim to be worth
+// routing. The PoE++ injector hangs from standoffs under the floor -- its Ethernet ports face
+// the rack front through a window, AC cord exits to the rear.
 // Print each half front-plate-down (print_orient = true), no supports. PETG, brim helps.
 // Half is 241.3 mm wide; MK3S bed is 250 x 210.
 // Model coordinates: X across, Y front(0)->rear, Z up. Floor bottom at Z=0.
@@ -30,7 +29,6 @@ flange_t    = 6;       // joint flange per half
 shelf_depth = 116;     // includes plate_t -- deepened for the 106 mm-long PoE++ injector
 
 /* [Devices: width(X) x depth(Y) x height(Z)] */
-ap_dims  = [98, 98, 23];     // Apple spec: 98 x 98 x 23 mm
 hue_dims = [91, 91, 26];     // Philips spec: ~90.6 x 90.9 x 26 mm
 clr      = 1.0;              // total side clearance, all devices
 hue_stop = 0.5;               // gap between Hue front and its stop wall
@@ -54,9 +52,9 @@ stop_wall_h = 25;             // front-registration wall height for Hue -- stays
 // into whatever occupies the 1U slot directly below (e.g. the Kinter amp panel) unless a
 // clear 1U gap is left there. Check real rack clearance before committing to this mount.
 bracket_hole_dy = 46.4;    // half-spacing: 2 holes, 92.80 mm apart, same X (front/rear of bracket_cy)
-bracket_cx = 162;          bracket_cy = shelf_depth / 2;   // centre of the hole pattern, right
-                                                             // half, freed-up ex-PoE bay -- pick
-                                                             // your own spot if this is wrong
+bracket_cx = 162;          bracket_cy = shelf_depth / 2;   // centre of the hole pattern, in the
+                                                             // left half's spare bay (local u)
+                                                             // -- pick your own spot if this is wrong
 bracket_pilot_d = 2.5;     // pilot hole for a self-tapping M3
 bracket_boss_d  = 7;       bracket_boss_h = 4;   // printed standoff, hangs below the floor
 // Connector end measured directly with calipers: 63.94 mm wide, ~31.2 mm tall (vs. 63 x 34 mm
@@ -66,15 +64,6 @@ bracket_boss_d  = 7;       bracket_boss_h = 4;   // printed standoff, hangs belo
 poe_pass_w = 48;  poe_pass_h = 28;  poe_pass_drop = 6;   // front window, open at the plate's
                                                            // bottom edge since the adapter hangs
                                                            // below rather than sitting in a pocket
-
-/* [AirPort front window + floor dimple (front plate / floor)] */
-win_w = 98;                  // whole AirPort front face visible (status light is on the front)
-win_h = 24;                  // device is 23 tall; window starts at the floor surface
-dimple_depth = 1;            // shallow recess the AirPort registers into
-dimple_inset = 3;            // recess is this much smaller than the full footprint, per side
-
-/* [PoE injector front window (front plate)] */
-poe_win_inset = 3;           // window is the device face, inset this much all round
 
 /* [Home Assistant Pi sled -- front-slide, latching, swappable tray]
    Earthquake country, and the Pis are the part most likely to get swapped -- so the sled now
@@ -98,16 +87,21 @@ rail_start = 16;                        // lip begins this far back from the fro
                                           // before the rails start gripping it
 latch_w = 14;       latch_len = 22;     // cantilever tongue cut into the sled plate: width, length
 latch_slit = 1;                         // slit width freeing the tongue to flex
-latch_travel = 8;                       // point on the tongue (from the sled's front edge) that
-                                          // rides the ratchet tooth below -- stays FLUSH with the
-                                          // plate's underside (no hanging nub, no floor groove
-                                          // needed: the tooth itself is what's raised)
+latch_travel = 8;                       // rear edge of the tongue's catch bar, from the sled's
+                                          // front edge. The bar is the only part of the sled left
+                                          // full-thickness along the tooth's track -- the rest of
+                                          // that track is relieved underneath (see pi_sled()) so
+                                          // the sled can pass over the raised tooth at all
+latch_catch = 3;                        // catch bar length; the tooth's sheer face lands just
+                                          // in front of it once the sled is fully inserted
+latch_clr = 0.3;                        // tooth-to-sled clearance, vertical and fore/aft
 ramp_len = 6;        ramp_h = 1.6;      // ratchet tooth: gentle rise over ramp_len, then an
                                           // immediate sheer drop -- easy to slide in over, caught
                                           // behind the drop when pulled back out
 
-// Official Pi mounting pattern (85 x 56 mm board, holes inset 3.5 mm from the short edges,
-// clustered toward the USB/Ethernet end along the long edge -- not centred).
+// Official Pi mounting pattern (85 x 56 mm board, 58 x 49 mm hole rectangle inset 3.5 mm from
+// the SD-card end and both long edges -- so the nearer hole row sits 23.5 mm back from the
+// USB/Ethernet edge, not 3.5 mm).
 pi_board = [56, 85];  pi_hole_x = 49;  pi_hole_y = 58;  pi_hole_inset = 3.5;
 // USB ports face the FRONT (e.g. a Zigbee/Z-Wave dongle for Home Assistant, reachable
 // without pulling the sled) -- USB-A and Ethernet share one edge on the Pi so they move
@@ -173,7 +167,7 @@ body_end = half_w - body_margin;
 left_items  = ["hue"];                  // + PoE++ bracket on the underside, see below
 right_items = ["pi_sled", "pi_sled"];   // 2x Raspberry Pi 5 + PoE HAT, each on its own sled
 
-function dev(t) = t == "ap" ? ap_dims : t == "hue" ? hue_dims : t == "pi_sled" ? [sled_dims[0], sled_dims[1], sled_dims[2]] : poe_dims;
+function dev(t) = t == "hue" ? hue_dims : sled_dims;
 function pw(t)  = dev(t)[0] + (t == "pi_sled" ? sled_clr : clr);
 function off(items, i) = i == 0 ? flange_t : off(items, i - 1) + pw(items[i - 1]) + wall_t;
 
@@ -298,7 +292,7 @@ module half_local(side) {
             cube([rail_depth, rail_y1 - rail_y0, rail_t]);
         translate([u0 + 2, sled_y0 + sled_dims[1], 0])     // rear stop
           cube([pw("pi_sled") - 4, wall_t, floor_t + sled_dims[2] + rail_z0 + rail_t]);
-        peak_y = sled_y0 + latch_travel - 3;   // tooth clears a few mm before full insertion
+        peak_y = sled_y0 + latch_travel - latch_catch;   // sheer face, just ahead of the catch bar
         hull() {
           translate([bcx - latch_w / 2, peak_y - ramp_len, floor_t]) cube([latch_w, 0.1, 0.1]);
           translate([bcx - latch_w / 2, peak_y - 0.1, floor_t]) cube([latch_w, 0.1, ramp_h]);
@@ -313,14 +307,6 @@ module half_local(side) {
     for (i = [0 : n - 1]) if (items[i] == "hue")
       translate([off(items, i) + pw("hue") / 2 + btn_dx - chan_w / 2, -0.1, z_rb - 0.2])
         cube([chan_w, plate_t + 0.2, rod_h + 0.4]);
-    // AirPort front windows + floor dimples (registration recess, device sits rear-flush)
-    for (i = [0 : n - 1]) if (items[i] == "ap") {
-      cx = off(items, i) + pw("ap") / 2;
-      translate([cx - win_w / 2, -0.1, floor_t]) cube([win_w, plate_t + 0.2, win_h]);
-      ap_y0 = shelf_depth - ap_dims[1];
-      translate([cx - ap_dims[0] / 2 + dimple_inset, ap_y0 + dimple_inset, floor_t - dimple_depth])
-        cube([ap_dims[0] - 2 * dimple_inset, ap_dims[1] - 2 * dimple_inset, dimple_depth + 0.01]);
-    }
     // Pi sled bay: full front opening -- the whole sled + Pi + PoE HAT slides through here,
     // then rides the rails (added above) back to its latched position.
     for (i = [0 : n - 1]) if (items[i] == "pi_sled") {
@@ -361,33 +347,39 @@ module oriented() {
 }
 
 // Removable Pi sled: flat tray + standoffs (M2.5 self-tap) in the official 58 x 49 mm Pi
-// pattern, clustered toward the front (USB/Ethernet) edge like the real board. A cantilever
-// latch tongue (cut via two slits) rides flush over the shelf's ratchet tooth as the sled is
-// pushed in -- the tooth's gentle front slope lifts the tongue, then its sheer back face
-// catches the tongue once it drops flush again. A raised pull-tab at the tongue's free tip,
-// right at the sled's front edge, is both the release (lift it to clear the tooth) and the
-// grip point for pulling the sled back out.
+// pattern, board oriented USB/Ethernet-forward. A cantilever latch tongue (two slits, open at
+// the sled's front edge) carries a full-thickness catch bar; everything else along the shelf
+// tooth's track is relieved on the underside so the sled slides over the tooth freely. As the
+// sled goes home the bar climbs the tooth's gentle front slope, lifting the tongue, then drops
+// behind the sheer back face. A raised pull-tab at the tongue's free tip, right at the sled's
+// front edge, is both the release (lift it to clear the tooth) and the grip point for pulling
+// the sled back out.
 module pi_sled() {
   cx = sled_dims[0] / 2;
   by0 = pi_front_gap;   // board's front (USB/Ethernet) edge, local to the sled
-  tongue_y0 = 2;  tongue_y1 = tongue_y0 + latch_len;   // free at tongue_y0 (front), anchored at tongue_y1
+  hole_y0 = by0 + pi_board[1] - pi_hole_inset - pi_hole_y;   // front hole row
+  catch_y0 = latch_travel - latch_catch + latch_clr;         // catch bar's front (latching) face
+  relief_w = latch_w + 2 * latch_slit;
+  relief_h = ramp_h + latch_clr;
   difference() {
     union() {
-      cube([sled_dims[0], sled_dims[1], sled_dims[2]]);
+      cube(sled_dims);
       for (dx = [-1, 1], dy = [0, 1])
-        translate([cx + dx * pi_hole_x / 2, by0 + pi_hole_inset + dy * pi_hole_y, sled_dims[2] - 0.01])
+        translate([cx + dx * pi_hole_x / 2, hole_y0 + dy * pi_hole_y, sled_dims[2] - 0.01])
           cylinder(d = so_d, h = so_h + 0.01, $fn = 32);
-      translate([cx - latch_w / 2, tongue_y0, sled_dims[2] - 0.01])   // pull-tab
+      translate([cx - latch_w / 2, 0, sled_dims[2] - 0.01])   // pull-tab
         cube([latch_w, 4, 1.4]);
     }
     for (dx = [-1, 1], dy = [0, 1])
-      translate([cx + dx * pi_hole_x / 2, by0 + pi_hole_inset + dy * pi_hole_y, sled_dims[2] + so_h - 6])
+      translate([cx + dx * pi_hole_x / 2, hole_y0 + dy * pi_hole_y, sled_dims[2] + so_h - 6])
         cylinder(d = pilot, h = 6.1, $fn = 24);
-    // the two slits that free the latch tongue to flex
-    translate([cx - latch_w / 2 - latch_slit, tongue_y0, -0.1])
-      cube([latch_slit, latch_len, sled_dims[2] + 0.2]);
-    translate([cx + latch_w / 2, tongue_y0, -0.1])
-      cube([latch_slit, latch_len, sled_dims[2] + 0.2]);
+    // the two slits that free the latch tongue to flex: free at the front edge, anchored at latch_len
+    for (x = [cx - latch_w / 2 - latch_slit, cx + latch_w / 2])
+      translate([x, -0.1, -0.1]) cube([latch_slit, latch_len + 0.1, sled_dims[2] + 0.2]);
+    // underside relief along the tooth's track: a pocket ahead of the catch bar (where the tooth
+    // sits once latched) and a clearance channel behind it, out through the sled's rear edge
+    for (seg = [[-0.1, catch_y0], [latch_travel, sled_dims[1] + 0.1]])
+      translate([cx - relief_w / 2, seg[0], -0.1]) cube([relief_w, seg[1] - seg[0], relief_h + 0.1]);
   }
 }
 
@@ -396,7 +388,7 @@ module pin_print() { translate([0, 0, pin_len + pin_head_h]) rotate([180, 0, 0])
 module rod_print() {
   translate([-(hue_u - rod_fl_w / 2), stroke + rod_fl_t, -z_rb]) rod_placed(hue_u, hue_yc, 0);
 }
-// assembly helpers for interference checks (right-half local coordinates)
+// assembly helpers for interference checks (left half's local coordinates: half_local("L"))
 module pin_rest()    { translate([hue_u, hue_yc, zt + btn_top]) pin(); }
 module pin_pressed() { translate([hue_u, hue_yc, zt + btn_top - btn_travel]) pin(); }
 module rod_at(press) { rod_placed(hue_u, hue_yc, press); }
