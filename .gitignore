@@ -1,0 +1,4 @@
+.DS_Store
+.claude/
+*.gcode
+*.3mf
