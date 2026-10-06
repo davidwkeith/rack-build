@@ -61,7 +61,7 @@ file, re-render them with:
 | 12x | 1.75mm filament offcuts, ~10mm long | Joint alignment dowels: 2 + 8 + 2 |
 | 8x | M2.5 self-tapping screw | Raspberry Pi 5 to sled standoffs (4 per sled); not needed where a HAT's own standoffs do the job |
 | 2x | M3 self-tapping screw | PoE++ bracket standoffs |
-| 4x | M3 self-tapping screw | Kinter MA170 tab mounting (2 per amp; 6x with a third zone) |
+| 4x | M3 x 6mm pan-head self-tapping screw | Kinter MA170 tab mounting (2 per amp; 6x with a third zone). Rule: length <= tab thickness + 5mm; 6mm suits tabs of 1-1.5mm |
 | 12x | M6 cage nut + screw | Rack ears, 4 per panel (the 2U has 8 holes; 4 is enough) |
 
 Every joint is two 6mm flanges with a 3mm head recess on one side and a
@@ -150,8 +150,11 @@ Three bolt-together columns. Each stack pairs one AirPort Express (upper U)
 directly above one Kinter MA170 amp (lower U), one stack per AirPlay zone.
 
 - **Columns 1 & 3 (zones 1 and 2):** AirPort rear-flush with a full-face front
-  window + floor dimple; Kinter front-flush with a control-panel window and
-  two printed screw bosses under the amp's factory mounting tabs. The amp
+  window + floor dimple; Kinter behind a 100 x 40mm window its knobs poke
+  through (they stand 20mm proud of the front plate, for finger adjustment),
+  with two printed screw bosses under the amp's factory mounting tabs.
+  Front-to-back vent slots under the amp and in the upper floor ahead of the
+  AirPort let its heat rise out of the stack. The amp
   floor sits 4mm up so those bosses stay inside the panel, and the AirPort
   floor sits 1mm above the amp rather than on the U line.
 - **Column 2:** blank — the same floors and joints with no windows, dimple
@@ -181,6 +184,9 @@ dowels** total across both seams.
    spans 408mm).
 
 **Open items:**
+- **Measure the amp's tab thickness** and confirm the screw length (see the
+  shopping list). The tab pilots are blind and leave 1mm of boss underneath,
+  so a screw up to tab + 5mm can't poke out of the panel's underside.
 - **Needs a test fit:** the amp bay is built from caliper measurements of
   one MA170 (103 x 70 x 43mm case, 124.5mm across the tabs, slots 113mm
   apart and 30-42mm behind the face) but hasn't been printed. Fit an amp
