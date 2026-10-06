@@ -217,7 +217,7 @@ function ap_y0_front() = plate_t;   // AirPort's face sits against the front pla
 // the column itself shifts over to make room for piece 1's tab on its left.
 module piece_1() { ear_tab(true); translate([ear_tab_w, 0, 0]) column(P1_w, false, "", true, "nut"); }
 // Piece 2 is blank by default, for a rack with two zones: the same structural skeleton as the
-// outer columns (both floors, both joint flanges), just no AirPort/amp windows, dimple or tab
+// outer columns (both floors, both joint flanges), just no AirPort/amp windows, rear holders or tab
 // bosses. piece_2_stack() is the drop-in alternative that adds a third zone's stack.
 module piece_2() { skeleton(P2_w, true, "head", true, "nut"); }
 module piece_2_stack() { column(P2_w, true, "head", true, "nut"); }

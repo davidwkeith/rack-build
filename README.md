@@ -158,7 +158,7 @@ directly above one Kinter MA170 amp (lower U), one stack per AirPlay zone.
   AirPort let its heat rise out of the stack. The amp
   floor sits 4mm up so those bosses stay inside the panel, and the AirPort
   floor sits 1mm above the amp rather than on the U line.
-- **Column 2:** blank — the same floors and joints with no windows, dimple
+- **Column 2:** blank — the same floors and joints with no windows, holders
   or bosses. For a third zone, print `audio-2-stack.stl` as the middle
   piece instead: it is the same stack as columns 1 and 3 and bolts up
   identically.
