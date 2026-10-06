@@ -181,15 +181,16 @@ seam total on this panel) = **3 bolts, 3 nuts, 2 dowels**.
 Three bolt-together columns. Each stack pairs one AirPort Express (upper U)
 directly above one Kinter MA170 amp (lower U), one stack per AirPlay zone.
 
-- **Columns 1 & 3 (zones 1 and 2):** AirPort rear-flush with a full-face front
-  window + floor dimple; Kinter behind a 100 x 40mm window its knobs poke
+- **Columns 1 & 3 (zones 1 and 2):** AirPort front-flush (face against the plate, behind a full-face
+  window for the status light) and two curved holders hugging its rear
+  corners so it can't slide back; Kinter behind a 100 x 40mm window its knobs poke
   through (they stand 20mm proud of the front plate, for finger adjustment),
   with two printed screw bosses under the amp's factory mounting tabs.
-  Front-to-back vent slots under the amp and in the upper floor ahead of the
+  Front-to-back vent slots under the amp and in the upper floor behind the
   AirPort let its heat rise out of the stack. The amp
   floor sits 4mm up so those bosses stay inside the panel, and the AirPort
   floor sits 1mm above the amp rather than on the U line.
-- **Column 2:** blank — the same floors and joints with no windows, dimple
+- **Column 2:** blank — the same floors and joints with no windows, holders
   or bosses. For a third zone, print `audio-2-stack.stl` as the middle
   piece instead: it is the same stack as columns 1 and 3 and bolts up
   identically.
@@ -208,8 +209,8 @@ dowels** total across both seams.
    meets the front plate, and screw it to the floor bosses through the
    amp's factory tabs. The two driver holes in the upper floor sit straight
    above the tab screws: lower each screw through on the driver.
-4. Slide each AirPort Express into its upper U from the rear until it drops
-   into the floor dimple. The driver holes stay clear either side of it, so
+4. Slide each AirPort Express into its upper U from the rear until its face
+   meets the front plate and the two curved rear holders cup its back corners. The driver holes stay clear either side of it, so
    an amp can come out without disturbing the AirPort.
 5. Mount with M6 cage nuts — these columns carry protruding ear tabs that
    reach the rack's true 482.6mm width (the 3 columns' own content only

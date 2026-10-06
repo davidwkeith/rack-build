@@ -56,9 +56,9 @@ amp_boss_h = 4;                   // boss under each tab screw, so it has more t
 vent_w = 3;                       // slots run front-to-back so a 3 mm bridge is all they cost
 vent_pitch = 8;  vent_span = 90;  // across the amp's width, clear of the tab bosses and driver holes
 amp_vent_y   = [10, 70];          // (y from the plate's back face) lower floor, under the amp: air in from the open underside
-ap_vent_y    = [8, 28];           // upper floor, in front of the AirPort (it starts at y=32): the
-                                  // amp's heat rises past the AirPort bay's open top instead of
-                                  // being trapped under it
+ap_vent_y    = [102, 124];        // upper floor, behind the AirPort (it ends at y=102, front-flush; the rear holders' lip is just behind it):
+                                  // the amp's heat rises past the AirPort bay's open top instead
+                                  // of being trapped under it
 amp_tab_access_d = 8;             // driver holes through the UPPER floor, straight above the tab
                                   // screws -- the only vertical way in once the amp is in place
 
@@ -67,7 +67,10 @@ ap_dims  = [98, 98, 23];
 ap_clr   = 1.0;
 ap_floor_t = 3;
 ap_win_w = 98;  ap_win_h = 24;
-ap_dimple_depth = 1;  ap_dimple_inset = 3;
+ap_corner_r = 12;               // AirPort's plan-view corner radius (the holders trace it)
+ap_holder_t = 1.6;              // curved holder wall thickness
+ap_holder_h = 10;               // ... and height above the upper floor
+ap_holder_len = 16;             // reach of each holder from the rear corner, along the rear and the side
 
 /* [Joint hardware -- M3 + filament dowels, same as the other panels, now at two Z levels] */
 bolt_d = 3.4;  head_d = 6.4;  head_depth = 3;
@@ -164,6 +167,9 @@ module column(w, left_is_flange, left_side, right_is_flange, right_side) {
       skeleton(w, left_is_flange, left_side, right_is_flange, right_side);
       // bosses under the thin amp floor, so the tab screws have something to bite into
       for (x = tab_x) translate([x, tab_y, 0]) teardrop(10, amp_boss_h + 0.01);
+      // curved holders at the AirPort's two rear corners, so it cannot slide back out of its bay
+      translate([cx, ap_y0_front(), z_ap + ap_floor_t - 0.01])
+        linear_extrude(height = ap_holder_h + 0.01) ap_rear_holders();
     }
     // Kinter: control-panel window the knobs poke through
     translate([cx - amp_win_w / 2, -0.1, z_amp + amp_floor_t + (amp_dims[2] - amp_win_h) / 2])
@@ -171,7 +177,7 @@ module column(w, left_is_flange, left_side, right_is_flange, right_side) {
     // tab screw pilots -- blind, into the floor and its boss below, for a self-tap from above
     for (x = tab_x) translate([x, tab_y, amp_pilot_skin])
       cylinder(d = amp_tab_pilot_d, h = z_amp + amp_floor_t + 0.2 - amp_pilot_skin, $fn = 16);
-    // vent slots: under the amp (intake) and in the upper floor ahead of the AirPort (exhaust)
+    // vent slots: under the amp (intake) and in the upper floor behind the AirPort (exhaust)
     n_vent = floor(vent_span / vent_pitch) + 1;
     for (i = [0 : n_vent - 1]) {
       vx = cx + (i - (n_vent - 1) / 2) * vent_pitch - vent_w / 2;
@@ -183,28 +189,35 @@ module column(w, left_is_flange, left_side, right_is_flange, right_side) {
     // ... and the driver holes that let a screwdriver reach them through the upper floor
     for (x = tab_x) translate([x, tab_y, z_ap - 0.1])
       teardrop(amp_tab_access_d, ap_floor_t + 0.2, hole = true);
-    // AirPort: full-front window (status light) + floor dimple, rear-flush, in the upper U
+    // AirPort: full-front window (status light), front-flush (its face meets the plate, behind
+    // the window), in the upper U. The curved rear holders are added below.
     translate([cx - ap_win_w / 2, -0.1, z_ap + ap_floor_t])
       cube([ap_win_w, plate_t + 0.2, ap_win_h]);
-    ap_y0 = shelf_depth - ap_dims[1];
-    // the dimple's rear wall slopes at 45 degrees: printed plate-down it would otherwise be a
-    // ledge hanging over the recess
-    translate([cx - ap_dims[0] / 2 + ap_dimple_inset, ap_y0 + ap_dimple_inset, z_ap + ap_floor_t]) hull() {
-      translate([0, 0, -ap_dimple_depth])
-        cube([ap_dims[0] - 2 * ap_dimple_inset, ap_dims[1] - 2 * ap_dimple_inset - ap_dimple_depth, ap_dimple_depth + 0.01]);
-      cube([ap_dims[0] - 2 * ap_dimple_inset, ap_dims[1] - 2 * ap_dimple_inset, 0.01]);
-    }
   }
   echo(str("column: amp front=", plate_t + amp_front_gap, " rear=", plate_t + amp_front_gap + amp_dims[1],
-           " | AirPort rear-flush, front=", ap_y0_echo(), "  (shelf rear at y=", shelf_depth, ")"));
+           " | AirPort front-flush, front=", ap_y0_front(), " rear=", ap_y0_front() + ap_dims[1], "  (shelf rear at y=", shelf_depth, ")"));
 }
-function ap_y0_echo() = shelf_depth - ap_dims[1];
+// Plan view, origin at the front-centre of the AirPort's footprint: the rounded-rectangle outline
+// of the device (plus clearance) offset outward by the wall thickness, kept only within
+// ap_holder_len of each rear corner.
+module ap_rear_holders() {
+  w = ap_pw;  d = ap_dims[1] + ap_clr;  t = ap_holder_t;
+  intersection() {
+    difference() {
+      offset(r = ap_corner_r + t) translate([-w / 2 + ap_corner_r, ap_corner_r]) square([w - 2 * ap_corner_r, d - 2 * ap_corner_r]);
+      offset(r = ap_corner_r)     translate([-w / 2 + ap_corner_r, ap_corner_r]) square([w - 2 * ap_corner_r, d - 2 * ap_corner_r]);
+    }
+    for (sx = [-1, 1]) translate([sx * (w / 2 + t - ap_holder_len / 2), d + t - ap_holder_len / 2])
+      square([ap_holder_len, ap_holder_len], center = true);
+  }
+}
+function ap_y0_front() = plate_t;   // AirPort's face sits against the front plate's back face
 
 // Piece 1 and 3 carry an ear tab reaching to the rack's true outer edge (see ear_tab_w above);
 // the column itself shifts over to make room for piece 1's tab on its left.
 module piece_1() { ear_tab(true); translate([ear_tab_w, 0, 0]) column(P1_w, false, "", true, "nut"); }
 // Piece 2 is blank by default, for a rack with two zones: the same structural skeleton as the
-// outer columns (both floors, both joint flanges), just no AirPort/amp windows, dimple or tab
+// outer columns (both floors, both joint flanges), just no AirPort/amp windows, rear holders or tab
 // bosses. piece_2_stack() is the drop-in alternative that adds a third zone's stack.
 module piece_2() { skeleton(P2_w, true, "head", true, "nut"); }
 module piece_2_stack() { column(P2_w, true, "head", true, "nut"); }
