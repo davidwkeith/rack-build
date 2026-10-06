@@ -61,7 +61,7 @@ file, re-render them with:
 | 12x | 1.75mm filament offcuts, ~10mm long | Joint alignment dowels: 2 + 8 + 2 |
 | 8x | M2.5 self-tapping screw | Raspberry Pi 5 to sled standoffs (4 per sled); not needed where a HAT's own standoffs do the job |
 | 2x | M3 self-tapping screw | PoE++ bracket standoffs |
-| 4x | M3 x 6mm pan-head self-tapping screw | Kinter MA170 tab mounting (2 per amp; 6x with a third zone). Rule: length <= tab thickness + 5mm; 6mm suits tabs of 1-1.5mm |
+| 4x | M3 x 6mm pan-head self-tapping screw | Kinter MA170 tab mounting (2 per amp; 6x with a third zone). The tabs are 2mm, so the longest safe screw is 7mm; 6mm is the standard size that fits |
 | 12x | M6 cage nut + screw | Rack ears, 4 per panel (the 2U has 8 holes; 4 is enough) |
 
 Every joint is two 6mm flanges with a 3mm head recess on one side and a
@@ -184,9 +184,8 @@ dowels** total across both seams.
    spans 408mm).
 
 **Open items:**
-- **Measure the amp's tab thickness** and confirm the screw length (see the
-  shopping list). The tab pilots are blind and leave 1mm of boss underneath,
-  so a screw up to tab + 5mm can't poke out of the panel's underside.
+- **Tab screws:** the amp's tabs are 2mm, so the blind pilots (1mm skin
+  under them) take a screw up to 7mm; M3 x 6mm gives about 4mm of grip.
 - **Needs a test fit:** the amp bay is built from caliper measurements of
   one MA170 (103 x 70 x 43mm case, 124.5mm across the tabs, slots 113mm
   apart and 30-42mm behind the face) but hasn't been printed. Fit an amp
