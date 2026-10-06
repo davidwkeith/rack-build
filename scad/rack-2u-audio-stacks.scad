@@ -56,9 +56,9 @@ amp_boss_h = 4;                   // boss under each tab screw, so it has more t
 vent_w = 3;                       // slots run front-to-back so a 3 mm bridge is all they cost
 vent_pitch = 8;  vent_span = 90;  // across the amp's width, clear of the tab bosses and driver holes
 amp_vent_y   = [10, 70];          // (y from the plate's back face) lower floor, under the amp: air in from the open underside
-ap_vent_y    = [8, 28];           // upper floor, in front of the AirPort (it starts at y=32): the
-                                  // amp's heat rises past the AirPort bay's open top instead of
-                                  // being trapped under it
+ap_vent_y    = [100, 122];        // upper floor, behind the AirPort (it ends at y=102, front-flush):
+                                  // the amp's heat rises past the AirPort bay's open top instead
+                                  // of being trapped under it
 amp_tab_access_d = 8;             // driver holes through the UPPER floor, straight above the tab
                                   // screws -- the only vertical way in once the amp is in place
 
@@ -171,7 +171,7 @@ module column(w, left_is_flange, left_side, right_is_flange, right_side) {
     // tab screw pilots -- blind, into the floor and its boss below, for a self-tap from above
     for (x = tab_x) translate([x, tab_y, amp_pilot_skin])
       cylinder(d = amp_tab_pilot_d, h = z_amp + amp_floor_t + 0.2 - amp_pilot_skin, $fn = 16);
-    // vent slots: under the amp (intake) and in the upper floor ahead of the AirPort (exhaust)
+    // vent slots: under the amp (intake) and in the upper floor behind the AirPort (exhaust)
     n_vent = floor(vent_span / vent_pitch) + 1;
     for (i = [0 : n_vent - 1]) {
       vx = cx + (i - (n_vent - 1) / 2) * vent_pitch - vent_w / 2;
@@ -183,10 +183,11 @@ module column(w, left_is_flange, left_side, right_is_flange, right_side) {
     // ... and the driver holes that let a screwdriver reach them through the upper floor
     for (x = tab_x) translate([x, tab_y, z_ap - 0.1])
       teardrop(amp_tab_access_d, ap_floor_t + 0.2, hole = true);
-    // AirPort: full-front window (status light) + floor dimple, rear-flush, in the upper U
+    // AirPort: full-front window (status light) + floor dimple, front-flush (its face meets the
+    // plate, behind the window), in the upper U
     translate([cx - ap_win_w / 2, -0.1, z_ap + ap_floor_t])
       cube([ap_win_w, plate_t + 0.2, ap_win_h]);
-    ap_y0 = shelf_depth - ap_dims[1];
+    ap_y0 = ap_y0_front();
     // the dimple's rear wall slopes at 45 degrees: printed plate-down it would otherwise be a
     // ledge hanging over the recess
     translate([cx - ap_dims[0] / 2 + ap_dimple_inset, ap_y0 + ap_dimple_inset, z_ap + ap_floor_t]) hull() {
@@ -196,9 +197,9 @@ module column(w, left_is_flange, left_side, right_is_flange, right_side) {
     }
   }
   echo(str("column: amp front=", plate_t + amp_front_gap, " rear=", plate_t + amp_front_gap + amp_dims[1],
-           " | AirPort rear-flush, front=", ap_y0_echo(), "  (shelf rear at y=", shelf_depth, ")"));
+           " | AirPort front-flush, front=", ap_y0_front(), " rear=", ap_y0_front() + ap_dims[1], "  (shelf rear at y=", shelf_depth, ")"));
 }
-function ap_y0_echo() = shelf_depth - ap_dims[1];
+function ap_y0_front() = plate_t;   // AirPort's face sits against the front plate's back face
 
 // Piece 1 and 3 carry an ear tab reaching to the rack's true outer edge (see ear_tab_w above);
 // the column itself shifts over to make room for piece 1's tab on its left.
