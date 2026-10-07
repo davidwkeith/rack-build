@@ -297,4 +297,5 @@ remix (model 125408) of Luther2k's Hue rack mount.
 
 ## License
 
-[ISC](LICENSE) © [David W. Keith](https://dwk.io)
+[CERN-OHL-S-2.0](LICENSE) (CERN Open Hardware Licence Version 2 - Strongly
+Reciprocal) © [David W. Keith](https://dwk.io)
