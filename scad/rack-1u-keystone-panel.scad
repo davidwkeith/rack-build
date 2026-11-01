@@ -10,9 +10,14 @@
 // have a real chance of engaging. PRINT A SINGLE TEST CUTOUT with your actual jacks before
 // committing to a full 24-port print -- clip tolerance varies enough by brand that this is
 // worth confirming, not assuming.
+// v2: 2.5 mm was still too thick -- jacks wouldn't snap in (that's past the 2.0 mm the note
+// above already flagged). The plate stays 2.5 mm for stiffness, but each port now gets a rear
+// pocket that thins the material the latch and hook actually grab down to port_t, and the
+// cutout gets port_clear of FDM slack (printed holes come out undersized, and the front face
+// is the first layer, so elephant foot narrows it further). part="test" prints one port.
 
 /* [Part] */
-part = "both"; // [both, left, right]
+part = "both"; // [both, left, right, test]
 print_orient = true;   // lie the panel flat instead of standing it on its thin edge -- same
                         // tip-over and horizontal-hole-printing reasons as the other panels
 
@@ -33,6 +38,11 @@ flange_depth = 10;    // joint flange reaches this far BEHIND the plate (there's
 /* [Keystone cutouts] */
 n_per_piece = 12;                 // 24 total across both pieces
 keystone_w = 14.5;  keystone_h = 16.0;   // industry-standard cutout, confirmed across brands
+port_clear = 0.3;                 // added to each cutout dimension -- FDM holes print small
+port_t     = 1.6;                 // plate thickness where the latch/hook engage (sheet-metal
+                                    // panels are ~1.5 mm); rest of the plate stays plate_t
+latch_relief = 3;                 // pocket reach above/below the cutout, room for the latch
+                                    // and hook to seat on the thinned ledge
 keystone_z = 15.83;               // moved down from centred (21.83) -- leaves ~20 mm of clear
                                     // panel above each port for a label, ~8 mm below
 
@@ -64,9 +74,9 @@ ear_half  = (rack_w - ear_hole_x) / 2 + ear_pad_w / 2 + port_gap;
 flange_lo = flange_t + port_gap;
 port_span = half_w - ear_half - flange_lo;
 pitch     = port_span / n_per_piece;
-echo(str("keystone pitch = ", pitch, " mm  (", keystone_w, " mm port, ",
-         pitch - keystone_w, " mm gap between adjacent ports)"));
-if (pitch < keystone_w) echo("WARNING: pitch is narrower than the port itself -- ports would overlap");
+echo(str("keystone pitch = ", pitch, " mm  (", keystone_w + port_clear, " mm port, ",
+         pitch - keystone_w - port_clear, " mm gap between adjacent ports)"));
+if (pitch < keystone_w + port_clear) echo("WARNING: pitch is narrower than the port itself -- ports would overlap");
 
 bolt_z  = [panel_h * 0.22, panel_h * 0.5, panel_h * 0.78];   // 3 bolts, spread over the height
 dowel_z = [panel_h * 0.36, panel_h * 0.64];
@@ -77,8 +87,21 @@ module xcyl(u, y, z, d, h, fn = 32) {
 }
 
 module keystone(cx) {
-  translate([cx - keystone_w / 2, -1, keystone_z - keystone_h / 2])
-    cube([keystone_w, plate_t + 2, keystone_h]);
+  w = keystone_w + port_clear;  h = keystone_h + port_clear;
+  translate([cx - w / 2, -1, keystone_z - h / 2]) cube([w, plate_t + 2, h]);
+  // Rear pocket: only above/below the cutout (where latch and hook sit), same width as the
+  // cutout so the webs between ports keep full plate_t. Opens upward when printed face-down.
+  translate([cx - w / 2, port_t, keystone_z - h / 2 - latch_relief])
+    cube([w, plate_t, h + 2 * latch_relief]);
+}
+
+// Single-port coupon for checking fit before the full print -- same plate, port and pocket.
+module test_coupon() {
+  w = keystone_w + 12;
+  difference() {
+    cube([w, plate_t, panel_h]);
+    keystone(w / 2);
+  }
 }
 
 module half_local(side) {
@@ -136,5 +159,6 @@ module oriented() {
 }
 
 gap = (part == "both") ? 10 : 0;
+if (part == "test") oriented() test_coupon();
 if (part == "left"  || part == "both") oriented() left_half();
 if (part == "right" || part == "both") translate([gap, 0, 0]) oriented() right_half();

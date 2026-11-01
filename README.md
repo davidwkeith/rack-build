@@ -234,22 +234,26 @@ dowels** total across both seams.
 </picture>
 
 **Source:** `scad/rack-1u-keystone-panel.scad`
-**Pieces:** `keystone-left.stl`, `keystone-right.stl` (12 ports each)
+**Pieces:** `keystone-left.stl`, `keystone-right.stl` (12 ports each),
+`keystone-test.stl` (one-port fit coupon)
 
-Standard 14.5 x 16mm keystone cutouts, industry-standard across brands.
-Panel's thinned to 2.5mm specifically so keystone clips can actually engage
-(the rest of this rack's panels are 4mm — too thick for most keystone
-jacks' spring clips to reach). Ports sit low in the panel, leaving ~20mm of
-clear space above each one for a label.
+Standard 14.5 x 16mm keystone cutouts, industry-standard across brands, plus
+0.3mm of FDM clearance (`port_clear`). The plate is 2.5mm for stiffness, but
+each port has a rear pocket above and below it that thins the ledge the
+latch and hook grab to 1.6mm (`port_t`) — 2.5mm alone was too thick for jacks
+to snap in. Ports sit low in the panel, leaving ~20mm of clear space above
+each one for a label.
 
 **Joint:** 3x M3 bolt + nut, 2x filament dowel = **3 bolts, 3 nuts, 2
 dowels**.
 
 **Assembly:**
-1. **Print one piece and test a single keystone jack before printing both**
-   — clip tolerance varies enough by brand/model that this is worth
-   confirming. If jacks won't seat, thin the panel further; if they're
-   loose, that's likely fine (the clip still does the retaining).
+1. **Print `keystone-test.stl` and try your jacks before printing both
+   pieces** — clip tolerance varies by brand/model. Seat the hook edge
+   first, then rock the latch side in until it clicks. Too tight to enter:
+   raise `port_clear` (or enable your slicer's elephant-foot compensation).
+   Enters but won't latch: lower `port_t`. Loose is fine — the clip still
+   does the retaining.
 2. Bolt the two pieces together same as the other panels (heads from the
    left piece, nuts on the right, dowels first).
 3. Snap jacks in from the rear, terminated or not — they self-retain, no

@@ -26,7 +26,7 @@ case "${1:-preview}" in
     mkdir -p stl
     for p in left right sled pin rod; do render rack-1u-hue-pi         "$p" "rack-1u-$p";  done
     for p in 1 2 2-stack 3;           do render rack-2u-audio-stacks   "$p" "audio-$p";    done
-    for p in left right;              do render rack-1u-keystone-panel "$p" "keystone-$p"; done
+    for p in left right test;         do render rack-1u-keystone-panel "$p" "keystone-$p"; done
     ;;
   preview)
     mkdir -p images
