@@ -20,6 +20,12 @@
 // and height clearance are now separate (the latch side needs more), the front edge gets a
 // chamfer to eat elephant foot, and part="test" is a 3-port ladder: -0.2 / +0 / +0.2 mm on
 // both clearances, marked by 1 / 2 / 3 notches in the coupon's top edge.
+// v4: the middle port (15.1 x 16.8) went in, but the latch had nothing to catch -- at 16.8 mm
+// the catch sits inside the opening instead of overlapping its top edge. The 16.0 mm standard
+// height is what gives the catch its bite, so height clearance goes back to 0 (the latch
+// flexes to pass; that's its job). The front chamfer now only runs on the side edges: on the
+// top/bottom edges it was shaving the lip the bottom hook needs. Width stays at the 15.1 mm
+// that fit. The ladder now varies height only: 15.8 / 16.0 / 16.2 mm.
 
 /* [Part] */
 part = "both"; // [both, left, right, test]
@@ -44,9 +50,11 @@ flange_depth = 10;    // joint flange reaches this far BEHIND the plate (there's
 n_per_piece = 12;                 // 24 total across both pieces
 keystone_w = 14.5;  keystone_h = 16.0;   // industry-standard cutout, confirmed across brands
 clear_w    = 0.6;                 // added to cutout width  -> 15.1 mm (FDM holes print small)
-clear_h    = 0.8;                 // added to cutout height -> 16.8 mm (latch side needs room
-                                    // to compress as it passes through)
-front_chamfer = 0.5;              // 45 deg on the cutout's front edge, eats elephant foot
+clear_h    = 0.0;                 // added to cutout height -> 16.0 mm. Keep this tight: the
+                                    // latch catch only overlaps the top edge by ~1 mm, and any
+                                    // extra height lets it slip inside the hole (v3, 16.8 mm)
+front_chamfer = 0.5;              // 45 deg on the cutout's front SIDE edges, eats elephant foot
+                                    // (not top/bottom -- the hook and catch need those edges)
 port_t     = 1.5;                 // plate thickness where the latch/hook engage (sheet-metal
                                     // panels are ~1.5 mm); rest of the plate stays plate_t
 latch_relief = 3;                 // pocket reach above/below the cutout, room for the latch
@@ -94,11 +102,11 @@ module xcyl(u, y, z, d, h, fn = 32) {
   translate([u, y, z]) rotate([0, 90, 0]) cylinder(d = d, h = h, $fn = fn);
 }
 
-module keystone(cx, dc = 0) {
-  w = keystone_w + clear_w + dc;  h = keystone_h + clear_h + dc;  c = front_chamfer;
+module keystone(cx, dh = 0) {
+  w = keystone_w + clear_w;  h = keystone_h + clear_h + dh;  c = front_chamfer;
   translate([cx - w / 2, -1, keystone_z - h / 2]) cube([w, plate_t + 2, h]);
-  hull() {   // front-edge chamfer
-    translate([cx - w / 2 - c, -0.01, keystone_z - h / 2 - c]) cube([w + 2 * c, 0.01, h + 2 * c]);
+  hull() {   // front side-edge chamfer
+    translate([cx - w / 2 - c, -0.01, keystone_z - h / 2]) cube([w + 2 * c, 0.01, h]);
     translate([cx - w / 2, c, keystone_z - h / 2]) cube([w, 0.01, h]);
   }
   // Rear pocket: only above/below the cutout (where latch and hook sit), same width as the
@@ -107,8 +115,8 @@ module keystone(cx, dc = 0) {
     cube([w, plate_t, h + 2 * latch_relief]);
 }
 
-// Fit ladder: three ports at -/0/+ test_step on both clearances, marked by 1/2/3 notches in
-// the top edge (2 notches = the defaults above). Same plate, chamfer and pocket as the panel.
+// Fit ladder: three ports at -/0/+ test_step on height (width is settled), marked by 1/2/3
+// notches in the top edge (2 notches = the defaults above). Same plate, chamfer and pocket.
 test_step = 0.2;
 module test_coupon() {
   sp = keystone_w + 8;

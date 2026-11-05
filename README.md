@@ -237,12 +237,14 @@ dowels** total across both seams.
 **Pieces:** `keystone-left.stl`, `keystone-right.stl` (12 ports each),
 `keystone-test.stl` (3-port fit ladder)
 
-Standard 14.5 x 16mm keystone cutouts plus FDM clearance: 15.1 x 16.8mm
-(`clear_w`, `clear_h`), with a 0.5mm chamfer on the front edge to absorb
-elephant foot. Sized against a measured 14.53 x 16.11mm jack body. The plate
-is 2.5mm for stiffness, but each port has a rear pocket above and below it
-that thins the ledge the latch and hook grab to 1.5mm (`port_t`). Ports sit low in the panel, leaving ~20mm of clear space above
-each one for a label.
+Cutouts are 15.1 x 16.0mm: the 14.5mm standard width plus FDM clearance
+(`clear_w`), with the standard 16.0mm height kept tight (`clear_h`) so the
+latch catch has an edge to grab. A 0.5mm chamfer on the front side edges
+absorbs elephant foot. Sized against a measured 14.53 x 16.11mm jack body.
+The plate is 2.5mm for stiffness, but each port has a rear pocket above and
+below it that thins the ledge the latch and hook grab to 1.5mm (`port_t`).
+Ports sit low in the panel, leaving ~20mm of clear space above each one for
+a label.
 
 **Joint:** 3x M3 bolt + nut, 2x filament dowel = **3 bolts, 3 nuts, 2
 dowels**.
@@ -250,9 +252,11 @@ dowels**.
 **Assembly:**
 1. **Print `keystone-test.stl` and try your jacks before printing both
    pieces.** It has three ports, marked by 1 / 2 / 3 notches on the top
-   edge: -0.2mm, the defaults, and +0.2mm on both clearances. Seat the hook
-   edge first, then rock the latch side in until it clicks. Add the winning
-   offset to `clear_w`/`clear_h`. Enters but won't latch: lower `port_t`.
+   edge: 15.8, 16.0 (default) and 16.2mm tall. Seat the hook edge first,
+   then rock the latch side in until it clicks. Pick the tallest one that
+   still clicks and holds, and add its offset to `clear_h`. Goes in but
+   nothing catches: the hole's too tall. Clicks but won't seat: lower
+   `port_t`.
 2. Bolt the two pieces together same as the other panels (heads from the
    left piece, nuts on the right, dowels first).
 3. Snap jacks in from the rear, terminated or not — they self-retain, no
