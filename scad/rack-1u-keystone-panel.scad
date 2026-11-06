@@ -26,6 +26,12 @@
 // flexes to pass; that's its job). The front chamfer now only runs on the side edges: on the
 // top/bottom edges it was shaving the lip the bottom hook needs. Width stays at the 15.1 mm
 // that fit. The ladder now varies height only: 15.8 / 16.0 / 16.2 mm.
+// v5: 16.2 mm fit best, but the latch still had nothing to grip. The jack has stop ribs on its
+// LEFT/RIGHT faces that bear on the panel's back face; the latch catch and bottom hook bear
+// on the front face, ~1.5 mm ahead of them. The v2 pocket only thinned above/below the hole,
+// so the ribs hit full 2.5 mm wall beside it and the catch never cleared the front face. The
+// pocket now also reaches side_relief past each side edge (adjacent pockets merge into one
+// band along the port row). The ladder now varies port_t: 1.3 / 1.5 / 1.7 mm.
 
 /* [Part] */
 part = "both"; // [both, left, right, test]
@@ -50,13 +56,15 @@ flange_depth = 10;    // joint flange reaches this far BEHIND the plate (there's
 n_per_piece = 12;                 // 24 total across both pieces
 keystone_w = 14.5;  keystone_h = 16.0;   // industry-standard cutout, confirmed across brands
 clear_w    = 0.6;                 // added to cutout width  -> 15.1 mm (FDM holes print small)
-clear_h    = 0.0;                 // added to cutout height -> 16.0 mm. Keep this tight: the
+clear_h    = 0.2;                 // added to cutout height -> 16.2 mm (v4 ladder). Keep it tight: the
                                     // latch catch only overlaps the top edge by ~1 mm, and any
                                     // extra height lets it slip inside the hole (v3, 16.8 mm)
 front_chamfer = 0.5;              // 45 deg on the cutout's front SIDE edges, eats elephant foot
                                     // (not top/bottom -- the hook and catch need those edges)
 port_t     = 1.5;                 // plate thickness where the latch/hook engage (sheet-metal
                                     // panels are ~1.5 mm); rest of the plate stays plate_t
+side_relief  = 1.5;               // pocket reach past each side edge, where the jack's stop
+                                    // ribs land on the back face
 latch_relief = 3;                 // pocket reach above/below the cutout, room for the latch
                                     // and hook to seat on the thinned ledge
 keystone_z = 15.83;               // moved down from centred (21.83) -- leaves ~20 mm of clear
@@ -102,21 +110,22 @@ module xcyl(u, y, z, d, h, fn = 32) {
   translate([u, y, z]) rotate([0, 90, 0]) cylinder(d = d, h = h, $fn = fn);
 }
 
-module keystone(cx, dh = 0) {
-  w = keystone_w + clear_w;  h = keystone_h + clear_h + dh;  c = front_chamfer;
+module keystone(cx, dt = 0) {
+  w = keystone_w + clear_w;  h = keystone_h + clear_h;  c = front_chamfer;
   translate([cx - w / 2, -1, keystone_z - h / 2]) cube([w, plate_t + 2, h]);
   hull() {   // front side-edge chamfer
     translate([cx - w / 2 - c, -0.01, keystone_z - h / 2]) cube([w + 2 * c, 0.01, h]);
     translate([cx - w / 2, c, keystone_z - h / 2]) cube([w, 0.01, h]);
   }
-  // Rear pocket: only above/below the cutout (where latch and hook sit), same width as the
-  // cutout so the webs between ports keep full plate_t. Opens upward when printed face-down.
-  translate([cx - w / 2, port_t, keystone_z - h / 2 - latch_relief])
-    cube([w, plate_t, h + 2 * latch_relief]);
+  // Rear pocket all round the cutout: latch and hook above/below, the jack's stop ribs either
+  // side. At the panel's pitch neighbouring pockets merge into one thinned band. Opens upward
+  // when printed face-down, so no supports.
+  translate([cx - w / 2 - side_relief, port_t + dt, keystone_z - h / 2 - latch_relief])
+    cube([w + 2 * side_relief, plate_t, h + 2 * latch_relief]);
 }
 
-// Fit ladder: three ports at -/0/+ test_step on height (width is settled), marked by 1/2/3
-// notches in the top edge (2 notches = the defaults above). Same plate, chamfer and pocket.
+// Fit ladder: three ports at -/0/+ test_step on port_t (cutout size is settled), marked by
+// 1/2/3 notches in the top edge (2 notches = the defaults above).
 test_step = 0.2;
 module test_coupon() {
   sp = keystone_w + 8;
