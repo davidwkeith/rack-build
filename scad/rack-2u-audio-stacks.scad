@@ -189,7 +189,7 @@ module column(w, left_is_flange, left_side, right_is_flange, right_side) {
     // ... and the driver holes that let a screwdriver reach them through the upper floor
     for (x = tab_x) translate([x, tab_y, z_ap - 0.1])
       teardrop(amp_tab_access_d, ap_floor_t + 0.2, hole = true);
-    // AirPort: full-front window (status light), front-flush (its face meets the plate, behind
+    // AirPort: full-front window (status light), flush with the rack front (its face fills
     // the window), in the upper U. The curved rear holders are added below.
     translate([cx - ap_win_w / 2, -0.1, z_ap + ap_floor_t])
       cube([ap_win_w, plate_t + 0.2, ap_win_h]);
@@ -211,7 +211,7 @@ module ap_rear_holders() {
       square([ap_holder_len, ap_holder_len], center = true);
   }
 }
-function ap_y0_front() = plate_t;   // AirPort's face sits against the front plate's back face
+function ap_y0_front() = 0;   // AirPort's face sits flush with the rack front, poking through its window (the holders sit plate_t further forward)
 
 // Piece 1 and 3 carry an ear tab reaching to the rack's true outer edge (see ear_tab_w above);
 // the column itself shifts over to make room for piece 1's tab on its left.
